@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const bcrypt = require\\(''bcryptjs''\\); bcrypt.compare\\(''admin123'', ''$2a$10$i1yI8HLA/1f9z.z5VLW5mu32n2vOFoa53lhwzH.IzlQKxioSeBzKG''\\).then\\(r => console.log\\(''init.sql sys_admin hash matches admin123:'', r\\)\\);\")",
+      "Bash(ls -la /d/hwl_workspace/application/backend/.env*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

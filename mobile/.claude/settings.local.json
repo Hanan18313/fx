@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/hwl_workspace/application/mobile -name *cart* -o -name *category* -o -name *promotion*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"try { require.resolve\\(''react-native-safe-area-context''\\); console.log\\(''installed''\\) } catch\\(e\\) { console.log\\(''not installed''\\) }\")",
+      "Bash(ls .prettierrc*)",
+      "Bash(ls .eslintrc*)",
+      "Bash(npm install:*)"
+    ]
+  }
+}
