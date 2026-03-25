@@ -17,6 +17,7 @@ interface AuthState {
   login: (username: string, password: string) => Promise<void>;
   fetchProfile: () => Promise<void>;
   logout: () => Promise<void>;
+  reset: () => void;
   hasPermission: (code: string) => boolean;
 }
 
@@ -26,9 +27,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   permissions: [],
   menus: [],
 
+  reset: () => {
+    localStorage.removeItem("admin_token");
+    set({ token: null, adminInfo: null, permissions: [], menus: [] });
+  },
+
   login: async (username: string, password: string) => {
     const res: any = await loginApi({ username, password });
     const token = res.token;
+    if (!token) {
+      throw new Error("登录失败：服务器未返回有效的 token");
+    }
     localStorage.setItem("admin_token", token);
     set({ token });
     await get().fetchProfile();

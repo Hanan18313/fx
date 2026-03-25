@@ -5,6 +5,7 @@ import { OrderMgmtModule } from './order-mgmt/order-mgmt.module';
 import { WithdrawalMgmtModule } from './withdrawal-mgmt/withdrawal-mgmt.module';
 import { ProfitMgmtModule } from './profit-mgmt/profit-mgmt.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { PromotionMgmtModule } from './promotion-mgmt/promotion-mgmt.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     WithdrawalMgmtModule,
     ProfitMgmtModule,
     DashboardModule,
+    PromotionMgmtModule,
   ],
 })
 export class BizModule {}

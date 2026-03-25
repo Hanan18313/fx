@@ -16,6 +16,7 @@ import OrderListPage from './pages/order/index';
 import OrderDetailPage from './pages/order/detail';
 import WithdrawalListPage from './pages/withdrawal/index';
 import ProfitPage from './pages/profit/index';
+import PromotionPage from './pages/promotion/index';
 
 const App: React.FC = () => {
   return (
@@ -43,6 +44,7 @@ const App: React.FC = () => {
           <Route path="orders/:id" element={<OrderDetailPage />} />
           <Route path="finance/withdrawals" element={<WithdrawalListPage />} />
           <Route path="profit" element={<ProfitPage />} />
+          <Route path="promotion" element={<PromotionPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

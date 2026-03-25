@@ -14,6 +14,7 @@ const order_mgmt_module_1 = require("./order-mgmt/order-mgmt.module");
 const withdrawal_mgmt_module_1 = require("./withdrawal-mgmt/withdrawal-mgmt.module");
 const profit_mgmt_module_1 = require("./profit-mgmt/profit-mgmt.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
+const promotion_mgmt_module_1 = require("./promotion-mgmt/promotion-mgmt.module");
 let BizModule = class BizModule {
 };
 exports.BizModule = BizModule;
@@ -26,6 +27,7 @@ exports.BizModule = BizModule = __decorate([
             withdrawal_mgmt_module_1.WithdrawalMgmtModule,
             profit_mgmt_module_1.ProfitMgmtModule,
             dashboard_module_1.DashboardModule,
+            promotion_mgmt_module_1.PromotionMgmtModule,
         ],
     })
 ], BizModule);

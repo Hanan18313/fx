@@ -362,6 +362,40 @@ INSERT IGNORE INTO sys_role_menu (role_id, menu_id) VALUES
 INSERT IGNORE INTO sys_role_menu (role_id, menu_id) VALUES
   (7, 24),(7, 25),(7, 26),(7, 27),(7, 28);
 
+-- ============================================
+-- 推广奖励流水表
+-- ============================================
+CREATE TABLE IF NOT EXISTS promotion_rewards (
+  id            BIGINT        NOT NULL AUTO_INCREMENT,
+  user_id       BIGINT        NOT NULL COMMENT '获得奖励的用户（推荐人）',
+  from_user_id  BIGINT        NOT NULL COMMENT '触发奖励的用户（被推荐人）',
+  order_id      BIGINT        DEFAULT NULL COMMENT '关联订单ID（佣金类型时有值）',
+  type          ENUM('referral','commission') NOT NULL COMMENT '奖励类型',
+  amount        DECIMAL(10,4) NOT NULL COMMENT '奖励金额',
+  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_reward_unique (user_id, from_user_id, type, order_id),
+  KEY idx_user_id (user_id),
+  KEY idx_from_user_id (from_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='推广奖励流水';
+
+-- ============================================
+-- 推广配置表
+-- ============================================
+CREATE TABLE IF NOT EXISTS promotion_configs (
+  config_key    VARCHAR(50)  NOT NULL COMMENT '配置键',
+  config_value  VARCHAR(200) NOT NULL COMMENT '配置值',
+  description   VARCHAR(200) DEFAULT NULL COMMENT '配置说明',
+  updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (config_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='推广配置';
+
+INSERT IGNORE INTO promotion_configs (config_key, config_value, description) VALUES
+  ('referral_reward_amount', '5.00', '邀请注册奖励金额（元）'),
+  ('commission_rate', '0.05', '分享订单佣金比例（占利润池比例）'),
+  ('referral_reward_enabled', 'true', '邀请奖励开关'),
+  ('commission_enabled', 'true', '分享佣金开关');
+
 -- 超级管理员账号（密码: admin123, bcrypt hash）
 INSERT IGNORE INTO sys_admin (id, username, password, real_name, dept_id, created_by) VALUES
   (1, 'admin', '$2a$10$ou/o5EN6Ft0UTfq9mUdcEOJ81P5ImXb46/6vMMEHdlXi5LVycsydu', '超级管理员', 1, NULL);

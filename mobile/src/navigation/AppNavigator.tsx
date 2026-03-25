@@ -6,6 +6,8 @@ import MainTabNavigator from './MainTabNavigator';
 import ProfitDashboardScreen from '../screens/profit/ProfitDashboardScreen';
 import WalletScreen from '../screens/wallet/WalletScreen';
 import PromotionScreen from '../screens/promotion/PromotionScreen';
+import InviteeListScreen from '../screens/promotion/InviteeListScreen';
+import RewardListScreen from '../screens/promotion/RewardListScreen';
 import ProductDetailScreen from '../screens/shop/ProductDetailScreen';
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +35,16 @@ export default function AppNavigator() {
             name="Promotion"
             component={PromotionScreen}
             options={{ headerShown: true, title: '推广中心' }}
+          />
+          <Stack.Screen
+            name="InviteeList"
+            component={InviteeListScreen}
+            options={{ headerShown: true, title: '我的下级' }}
+          />
+          <Stack.Screen
+            name="RewardList"
+            component={RewardListScreen}
+            options={{ headerShown: true, title: '奖励流水' }}
           />
         </>
       ) : (

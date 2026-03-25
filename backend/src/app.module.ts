@@ -18,12 +18,15 @@ import { SysDeptEntity } from "./database/entities/sys-dept.entity";
 import { SysRoleDeptEntity } from "./database/entities/sys-role-dept.entity";
 import { SysOperationLogEntity } from "./database/entities/sys-operation-log.entity";
 import { SysLoginLogEntity } from "./database/entities/sys-login-log.entity";
+import { PromotionRewardEntity } from "./database/entities/promotion-reward.entity";
+import { PromotionConfigEntity } from "./database/entities/promotion-config.entity";
 import { AuthModule } from "./auth/auth.module";
 import { ShopModule } from "./shop/shop.module";
 import { OrderModule } from "./order/order.module";
 import { ProfitModule } from "./profit/profit.module";
 import { WalletModule } from "./wallet/wallet.module";
 import { AdminModule } from "./admin/admin.module";
+import { PromotionModule } from "./promotion/promotion.module";
 import { RedisModule } from "./common/redis/redis.module";
 
 @Module({
@@ -57,6 +60,8 @@ import { RedisModule } from "./common/redis/redis.module";
           SysRoleDeptEntity,
           SysOperationLogEntity,
           SysLoginLogEntity,
+          PromotionRewardEntity,
+          PromotionConfigEntity,
         ],
         synchronize: false, // 不自动改表，使用 init.sql 管理表结构
         timezone: "+08:00",
@@ -81,6 +86,7 @@ import { RedisModule } from "./common/redis/redis.module";
     OrderModule,
     ProfitModule,
     WalletModule,
+    PromotionModule,
     AdminModule,
   ],
 })

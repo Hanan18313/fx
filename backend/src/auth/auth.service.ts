@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../database/entities/user.entity';
 import { WalletEntity } from '../database/entities/wallet.entity';
 import { TokenBlacklistService } from '../common/services/token-blacklist.service';
+import { PromotionService } from '../promotion/promotion.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -15,6 +16,8 @@ function genInviteCode(): string {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepo: Repository<UserEntity>,
@@ -22,6 +25,7 @@ export class AuthService {
     private readonly walletRepo: Repository<WalletEntity>,
     private readonly jwtService: JwtService,
     private readonly tokenBlacklistService: TokenBlacklistService,
+    private readonly promotionService: PromotionService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -49,6 +53,13 @@ export class AuthService {
     await this.walletRepo.save(this.walletRepo.create({ userId: saved.id }));
 
     const token = this.jwtService.sign({ id: saved.id, role: saved.role });
+
+    if (parentId) {
+      this.promotionService
+        .grantReferralReward(parentId, saved.id)
+        .catch((err) => this.logger.error('邀请奖励发放异常', err));
+    }
+
     return { token, invite_code: inviteCode };
   }
 

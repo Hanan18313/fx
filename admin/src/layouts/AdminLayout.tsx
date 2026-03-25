@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Layout, Menu, Dropdown, Avatar, Breadcrumb, Button, App } from "antd";
 import {
   MenuFoldOutlined,
@@ -16,6 +16,8 @@ import {
   ApartmentOutlined,
   SafetyOutlined,
   AppstoreOutlined,
+  GiftOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/useAuthStore";
@@ -36,6 +38,9 @@ const iconMap: Record<string, React.ReactNode> = {
   Menu: <AppstoreOutlined />,
   OfficeBuilding: <ApartmentOutlined />,
   Document: <FileTextOutlined />,
+  Gift: <GiftOutlined />,
+  Share: <ShareAltOutlined />,
+  Promotion: <ShareAltOutlined />,
 };
 
 function buildMenuItems(menus: any[]): any[] {
@@ -90,12 +95,8 @@ function findOpenKeys(
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { adminInfo, menus, fetchProfile, logout } = useAuthStore();
+  const { adminInfo, menus, logout } = useAuthStore();
   const { collapsed, toggleCollapsed } = useAppStore();
-
-  useEffect(() => {
-    if (!adminInfo) fetchProfile().catch(() => navigate("/login"));
-  }, []);
 
   const menuItems = useMemo(() => buildMenuItems(menus), [menus]);
   const breadcrumbItems = useMemo(() => {

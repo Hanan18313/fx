@@ -18,6 +18,7 @@ const jwt_strategy_1 = require("./jwt.strategy");
 const user_entity_1 = require("../database/entities/user.entity");
 const wallet_entity_1 = require("../database/entities/wallet.entity");
 const token_blacklist_service_1 = require("../common/services/token-blacklist.service");
+const promotion_module_1 = require("../promotion/promotion.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -26,6 +27,7 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity, wallet_entity_1.WalletEntity]),
             passport_1.PassportModule,
+            promotion_module_1.PromotionModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],

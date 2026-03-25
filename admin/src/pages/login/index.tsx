@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/useAuthStore';
 
+const REMEMBER_KEY = 'admin_remember_credentials';
+
 const LoginPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
 
-  const onFinish = async (values: { username: string; password: string }) => {
+  useEffect(() => {
+    const saved = localStorage.getItem(REMEMBER_KEY);
+    if (saved) {
+      try {
+        const { username, password } = JSON.parse(saved);
+        form.setFieldsValue({ username, password, remember: true });
+      } catch { /* ignore */ }
+    }
+  }, [form]);
+
+  const onFinish = async (values: { username: string; password: string; remember: boolean }) => {
     setLoading(true);
     try {
       await login(values.username, values.password);
+      if (values.remember) {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ username: values.username, password: values.password }));
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
       message.success('登录成功');
       navigate('/', { replace: true });
     } catch {
@@ -36,6 +54,7 @@ const LoginPage: React.FC = () => {
           <h2>欢迎登录</h2>
           <p className="login-subtitle">请输入管理员账号和密码</p>
           <Form
+            form={form}
             size="large"
             onFinish={onFinish}
             initialValues={{ remember: true }}

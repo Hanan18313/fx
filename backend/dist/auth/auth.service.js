@@ -44,6 +44,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AuthService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -54,15 +55,18 @@ const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../database/entities/user.entity");
 const wallet_entity_1 = require("../database/entities/wallet.entity");
 const token_blacklist_service_1 = require("../common/services/token-blacklist.service");
+const promotion_service_1 = require("../promotion/promotion.service");
 function genInviteCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
-let AuthService = class AuthService {
-    constructor(userRepo, walletRepo, jwtService, tokenBlacklistService) {
+let AuthService = AuthService_1 = class AuthService {
+    constructor(userRepo, walletRepo, jwtService, tokenBlacklistService, promotionService) {
         this.userRepo = userRepo;
         this.walletRepo = walletRepo;
         this.jwtService = jwtService;
         this.tokenBlacklistService = tokenBlacklistService;
+        this.promotionService = promotionService;
+        this.logger = new common_1.Logger(AuthService_1.name);
     }
     async register(dto) {
         const existing = await this.userRepo.findOne({ where: { phone: dto.phone } });
@@ -85,6 +89,11 @@ let AuthService = class AuthService {
         const saved = await this.userRepo.save(user);
         await this.walletRepo.save(this.walletRepo.create({ userId: saved.id }));
         const token = this.jwtService.sign({ id: saved.id, role: saved.role });
+        if (parentId) {
+            this.promotionService
+                .grantReferralReward(parentId, saved.id)
+                .catch((err) => this.logger.error('邀请奖励发放异常', err));
+        }
         return { token, invite_code: inviteCode };
     }
     async login(dto) {
@@ -105,13 +114,14 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(wallet_entity_1.WalletEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         jwt_1.JwtService,
-        token_blacklist_service_1.TokenBlacklistService])
+        token_blacklist_service_1.TokenBlacklistService,
+        promotion_service_1.PromotionService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

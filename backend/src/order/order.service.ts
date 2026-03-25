@@ -4,6 +4,8 @@ import { Repository, DataSource } from 'typeorm';
 import { OrderEntity } from '../database/entities/order.entity';
 import { OrderItemEntity } from '../database/entities/order-item.entity';
 import { ProductEntity } from '../database/entities/product.entity';
+import { UserEntity } from '../database/entities/user.entity';
+import { PromotionService } from '../promotion/promotion.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
@@ -13,7 +15,10 @@ export class OrderService {
     private readonly orderRepo: Repository<OrderEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepo: Repository<ProductEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>,
     private readonly dataSource: DataSource,
+    private readonly promotionService: PromotionService,
   ) {}
 
   async createOrder(userId: number, dto: CreateOrderDto) {
@@ -69,7 +74,17 @@ export class OrderService {
     });
     if (!order) throw new NotFoundException('订单不存在或已支付');
 
-    await this.orderRepo.update(orderId, { status: 'done', paidAt: new Date() });
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(OrderEntity, orderId, { status: 'done', paidAt: new Date() });
+
+      const user = await this.userRepo.findOne({ where: { id: userId }, select: ['parentId'] });
+      if (user?.parentId) {
+        await this.promotionService.grantCommission(
+          user.parentId, userId, orderId, Number(order.profitPool), manager,
+        );
+      }
+    });
+
     return { message: '支付成功，分润将从明日起每天自动释放' };
   }
 

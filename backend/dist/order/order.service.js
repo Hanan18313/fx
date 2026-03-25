@@ -19,11 +19,15 @@ const typeorm_2 = require("typeorm");
 const order_entity_1 = require("../database/entities/order.entity");
 const order_item_entity_1 = require("../database/entities/order-item.entity");
 const product_entity_1 = require("../database/entities/product.entity");
+const user_entity_1 = require("../database/entities/user.entity");
+const promotion_service_1 = require("../promotion/promotion.service");
 let OrderService = class OrderService {
-    constructor(orderRepo, productRepo, dataSource) {
+    constructor(orderRepo, productRepo, userRepo, dataSource, promotionService) {
         this.orderRepo = orderRepo;
         this.productRepo = productRepo;
+        this.userRepo = userRepo;
         this.dataSource = dataSource;
+        this.promotionService = promotionService;
     }
     async createOrder(userId, dto) {
         return this.dataSource.transaction(async (manager) => {
@@ -73,7 +77,13 @@ let OrderService = class OrderService {
         });
         if (!order)
             throw new common_1.NotFoundException('订单不存在或已支付');
-        await this.orderRepo.update(orderId, { status: 'done', paidAt: new Date() });
+        await this.dataSource.transaction(async (manager) => {
+            await manager.update(order_entity_1.OrderEntity, orderId, { status: 'done', paidAt: new Date() });
+            const user = await this.userRepo.findOne({ where: { id: userId }, select: ['parentId'] });
+            if (user?.parentId) {
+                await this.promotionService.grantCommission(user.parentId, userId, orderId, Number(order.profitPool), manager);
+            }
+        });
         return { message: '支付成功，分润将从明日起每天自动释放' };
     }
     async getOrders(userId) {
@@ -90,8 +100,11 @@ exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.OrderEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(product_entity_1.ProductEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.DataSource])
+        typeorm_2.Repository,
+        typeorm_2.DataSource,
+        promotion_service_1.PromotionService])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

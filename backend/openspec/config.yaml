@@ -1,0 +1,7 @@
+schema: spec-driven
+
+context: |
+  Output language: All artifact content must be written in Simplified Chinese,
+  including section titles, descriptions, scenario text, and task items.
+  The only exceptions are: code identifiers, API paths, technical terms with no
+  standard Chinese translation, and RFC keyword markers (SHALL/MUST/SHOULD/GIVEN/WHEN/THEN).

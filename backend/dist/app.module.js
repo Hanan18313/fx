@@ -27,12 +27,15 @@ const sys_dept_entity_1 = require("./database/entities/sys-dept.entity");
 const sys_role_dept_entity_1 = require("./database/entities/sys-role-dept.entity");
 const sys_operation_log_entity_1 = require("./database/entities/sys-operation-log.entity");
 const sys_login_log_entity_1 = require("./database/entities/sys-login-log.entity");
+const promotion_reward_entity_1 = require("./database/entities/promotion-reward.entity");
+const promotion_config_entity_1 = require("./database/entities/promotion-config.entity");
 const auth_module_1 = require("./auth/auth.module");
 const shop_module_1 = require("./shop/shop.module");
 const order_module_1 = require("./order/order.module");
 const profit_module_1 = require("./profit/profit.module");
 const wallet_module_1 = require("./wallet/wallet.module");
 const admin_module_1 = require("./admin/admin.module");
+const promotion_module_1 = require("./promotion/promotion.module");
 const redis_module_1 = require("./common/redis/redis.module");
 let AppModule = class AppModule {
 };
@@ -68,6 +71,8 @@ exports.AppModule = AppModule = __decorate([
                         sys_role_dept_entity_1.SysRoleDeptEntity,
                         sys_operation_log_entity_1.SysOperationLogEntity,
                         sys_login_log_entity_1.SysLoginLogEntity,
+                        promotion_reward_entity_1.PromotionRewardEntity,
+                        promotion_config_entity_1.PromotionConfigEntity,
                     ],
                     synchronize: false,
                     timezone: "+08:00",
@@ -89,6 +94,7 @@ exports.AppModule = AppModule = __decorate([
             order_module_1.OrderModule,
             profit_module_1.ProfitModule,
             wallet_module_1.WalletModule,
+            promotion_module_1.PromotionModule,
             admin_module_1.AdminModule,
         ],
     })
