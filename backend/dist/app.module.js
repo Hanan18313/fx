@@ -29,6 +29,12 @@ const sys_operation_log_entity_1 = require("./database/entities/sys-operation-lo
 const sys_login_log_entity_1 = require("./database/entities/sys-login-log.entity");
 const promotion_reward_entity_1 = require("./database/entities/promotion-reward.entity");
 const promotion_config_entity_1 = require("./database/entities/promotion-config.entity");
+const address_entity_1 = require("./database/entities/address.entity");
+const category_entity_1 = require("./database/entities/category.entity");
+const banner_entity_1 = require("./database/entities/banner.entity");
+const favorite_entity_1 = require("./database/entities/favorite.entity");
+const review_entity_1 = require("./database/entities/review.entity");
+const notification_entity_1 = require("./database/entities/notification.entity");
 const auth_module_1 = require("./auth/auth.module");
 const shop_module_1 = require("./shop/shop.module");
 const order_module_1 = require("./order/order.module");
@@ -36,6 +42,13 @@ const profit_module_1 = require("./profit/profit.module");
 const wallet_module_1 = require("./wallet/wallet.module");
 const admin_module_1 = require("./admin/admin.module");
 const promotion_module_1 = require("./promotion/promotion.module");
+const address_module_1 = require("./address/address.module");
+const category_module_1 = require("./category/category.module");
+const banner_module_1 = require("./banner/banner.module");
+const user_module_1 = require("./user/user.module");
+const favorite_module_1 = require("./favorite/favorite.module");
+const review_module_1 = require("./review/review.module");
+const notification_module_1 = require("./notification/notification.module");
 const redis_module_1 = require("./common/redis/redis.module");
 let AppModule = class AppModule {
 };
@@ -73,6 +86,12 @@ exports.AppModule = AppModule = __decorate([
                         sys_login_log_entity_1.SysLoginLogEntity,
                         promotion_reward_entity_1.PromotionRewardEntity,
                         promotion_config_entity_1.PromotionConfigEntity,
+                        address_entity_1.AddressEntity,
+                        category_entity_1.CategoryEntity,
+                        banner_entity_1.BannerEntity,
+                        favorite_entity_1.FavoriteEntity,
+                        review_entity_1.ReviewEntity,
+                        notification_entity_1.NotificationEntity,
                     ],
                     synchronize: false,
                     timezone: "+08:00",
@@ -95,6 +114,13 @@ exports.AppModule = AppModule = __decorate([
             profit_module_1.ProfitModule,
             wallet_module_1.WalletModule,
             promotion_module_1.PromotionModule,
+            address_module_1.AddressModule,
+            category_module_1.CategoryModule,
+            banner_module_1.BannerModule,
+            user_module_1.UserModule,
+            favorite_module_1.FavoriteModule,
+            review_module_1.ReviewModule,
+            notification_module_1.NotificationModule,
             admin_module_1.AdminModule,
         ],
     })

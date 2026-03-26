@@ -9,3 +9,6 @@ export type {
   RegisterParams,
   AuthResponse,
 } from './auth';
+export type { Order, OrderItem, OrderStatus, Address } from './order';
+export { ORDER_STATUS_MAP, ORDER_STATUS_TABS } from './order';
+export type { Notification, NotificationType } from './notification';

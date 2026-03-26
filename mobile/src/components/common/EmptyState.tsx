@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize } from '../../constants/theme';
+import { Colors, BorderRadius, Spacing, FontSize, Fonts } from '../../constants/theme';
 import type { EmptyStateProps } from './types';
 
 export default function EmptyState({ icon = '📦', message, actionText, onAction }: EmptyStateProps) {
@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: Colors.textWhite,
     fontSize: FontSize.md,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
 });

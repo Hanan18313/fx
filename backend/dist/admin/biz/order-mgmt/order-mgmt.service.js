@@ -55,14 +55,22 @@ let OrderMgmtService = class OrderMgmtService {
         return { list, total, page, pageSize };
     }
     async detail(id) {
-        const order = await this.orderRepo.findOneBy({ id });
-        if (!order) {
+        const qb = this.orderRepo
+            .createQueryBuilder('o')
+            .leftJoin('users', 'u', 'u.id = o.user_id')
+            .addSelect(['u.phone AS userPhone', 'u.nickname AS userNickname'])
+            .where('o.id = :id', { id });
+        const result = await qb.getRawAndEntities();
+        const order = result.entities[0];
+        if (!order)
             throw new common_1.BadRequestException('订单不存在');
-        }
-        const items = await this.orderItemRepo.find({
-            where: { orderId: id },
-        });
-        return { ...order, items };
+        const items = await this.orderItemRepo.find({ where: { orderId: id } });
+        return {
+            ...order,
+            userPhone: result.raw[0]?.userPhone ?? null,
+            userNickname: result.raw[0]?.userNickname ?? null,
+            items,
+        };
     }
     async updateStatus(id, newStatus) {
         const order = await this.orderRepo.findOneBy({ id });
@@ -70,13 +78,22 @@ let OrderMgmtService = class OrderMgmtService {
             throw new common_1.BadRequestException('订单不存在');
         }
         const allowedTransitions = {
+            pending: ['cancelled'],
             paid: ['shipped', 'cancelled'],
+            shipped: ['done'],
         };
         const allowed = allowedTransitions[order.status];
         if (!allowed || !allowed.includes(newStatus)) {
             throw new common_1.BadRequestException(`不允许从 ${order.status} 状态变更为 ${newStatus}`);
         }
-        await this.orderRepo.update(id, { status: newStatus });
+        const updateData = { status: newStatus };
+        if (newStatus === 'shipped')
+            updateData.shippedAt = new Date();
+        if (newStatus === 'done')
+            updateData.completedAt = new Date();
+        if (newStatus === 'cancelled')
+            updateData.remark = '管理员取消';
+        await this.orderRepo.update(id, updateData);
         return { message: '状态更新成功' };
     }
 };

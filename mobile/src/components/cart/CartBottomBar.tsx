@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Spacing, Fonts } from '../../constants/theme';
 import type { CartBottomBarProps } from './types';
 
 export default function CartBottomBar({
@@ -14,40 +15,38 @@ export default function CartBottomBar({
 }: CartBottomBarProps) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.selectAll} onPress={onToggleSelectAll}>
-        <View
-          style={[styles.checkbox, isAllSelected && styles.checkboxChecked]}
-        >
-          {isAllSelected && <Text style={styles.checkmark}>✓</Text>}
+      <View style={styles.summaryRow}>
+        <View style={styles.leftCol}>
+          <Text style={styles.totalLabel}>合计</Text>
+          <Text style={styles.totalPrice}>¥{totalPrice.toFixed(2)}</Text>
         </View>
-        <Text style={styles.selectAllText}>全选</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.selectAllPill} onPress={onToggleSelectAll}>
+          <View style={[styles.checkbox, isAllSelected && styles.checkboxChecked]}>
+            {isAllSelected && <Ionicons name="checkmark" size={12} color={Colors.textWhite} />}
+          </View>
+          <Text style={styles.selectAllText}>全选</Text>
+        </TouchableOpacity>
+      </View>
 
       {!editing ? (
-        <>
-          <View style={styles.totalArea}>
-            <Text style={styles.totalLabel}>合计：</Text>
-            <Text style={styles.totalPrice}>¥{totalPrice.toFixed(2)}</Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.settleBtn, selectedCount === 0 && styles.settleBtnDisabled]}
-            onPress={onSettle}
-            disabled={selectedCount === 0}
-          >
-            <Text style={styles.settleText}>结算({selectedCount})</Text>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity
+          style={[styles.settleBtn, selectedCount === 0 && styles.btnDisabled]}
+          onPress={onSettle}
+          disabled={selectedCount === 0}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.settleBtnText}>去结算</Text>
+          <Ionicons name="arrow-forward" size={16} color={Colors.textWhite} />
+        </TouchableOpacity>
       ) : (
-        <>
-          <View style={{ flex: 1 }} />
-          <TouchableOpacity
-            style={[styles.deleteBtn, selectedCount === 0 && styles.settleBtnDisabled]}
-            onPress={onDeleteSelected}
-            disabled={selectedCount === 0}
-          >
-            <Text style={styles.settleText}>删除({selectedCount})</Text>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity
+          style={[styles.deleteBtn, selectedCount === 0 && styles.btnDisabled]}
+          onPress={onDeleteSelected}
+          disabled={selectedCount === 0}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.settleBtnText}>删除({selectedCount})</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -55,75 +54,104 @@ export default function CartBottomBar({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(195,198,211,0.15)',
+    gap: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgba(0,44,102,0.12)',
+        shadowOffset: { width: 0, height: -12 },
+        shadowOpacity: 1,
+        shadowRadius: 32,
+      },
+      android: { elevation: 8 },
+    }),
+  },
+  summaryRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
-  selectAll: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.sm,
-  },
-  checkboxChecked: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  checkmark: {
-    color: Colors.textWhite,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  selectAllText: {
-    fontSize: FontSize.md,
-    color: Colors.textPrimary,
-  },
-  totalArea: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'flex-end',
-    marginRight: Spacing.md,
+  leftCol: {
+    gap: 2,
   },
   totalLabel: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
+    fontSize: 10,
+    color: Colors.bodyGray,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   totalPrice: {
-    fontSize: FontSize.xl,
-    fontWeight: 'bold',
-    color: Colors.primary,
+    fontSize: 30,
+    fontFamily: Fonts.numBlack,
+    color: Colors.textPrimary,
+    letterSpacing: -1.5,
+    lineHeight: 36,
+  },
+  selectAllPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F3F3',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    gap: 8,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: Colors.navyButton,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: Colors.navyButton,
+    borderColor: Colors.navyButton,
+  },
+  selectAllText: {
+    fontSize: 12,
+    color: Colors.navyButton,
+    fontFamily: Fonts.medium,
+    letterSpacing: 0.6,
   },
   settleBtn: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: BorderRadius.full,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.navyButton,
+    paddingVertical: 16,
+    borderRadius: 12,
+    gap: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: 'rgba(0,65,145,0.2)',
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 1,
+        shadowRadius: 25,
+      },
+      android: { elevation: 6 },
+    }),
   },
-  settleBtnDisabled: {
-    opacity: 0.5,
+  settleBtnText: {
+    fontSize: 18,
+    fontFamily: Fonts.medium,
+    color: Colors.textWhite,
+    lineHeight: 28,
   },
   deleteBtn: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#D32F2F',
+    paddingVertical: 16,
+    borderRadius: 12,
   },
-  settleText: {
-    color: Colors.textWhite,
-    fontSize: FontSize.md,
-    fontWeight: 'bold',
+  btnDisabled: {
+    opacity: 0.4,
   },
 });

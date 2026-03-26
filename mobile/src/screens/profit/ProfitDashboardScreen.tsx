@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../../services/api';
+import { Fonts } from '../../constants/theme';
 
 interface Dashboard {
   released_total: number;
@@ -58,14 +59,14 @@ export default function ProfitDashboardScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: { backgroundColor: '#E53935', padding: 20, paddingTop: 40 },
-  headerTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
+  headerTitle: { color: '#fff', fontSize: 20, fontFamily: Fonts.bold },
   cards: { padding: 16 },
   card: { borderRadius: 12, padding: 20, marginBottom: 12 },
   halfCard: { flex: 1, marginHorizontal: 4 },
   row: { flexDirection: 'row' },
   cardLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 13, marginBottom: 8 },
-  cardValue: { color: '#fff', fontSize: 26, fontWeight: 'bold' },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', marginHorizontal: 16, marginTop: 8, marginBottom: 8 },
+  cardValue: { color: '#fff', fontSize: 26, fontFamily: Fonts.numBold },
+  sectionTitle: { fontSize: 16, fontFamily: Fonts.bold, marginHorizontal: 16, marginTop: 8, marginBottom: 8 },
   desc: { backgroundColor: '#fff', margin: 16, borderRadius: 10, padding: 16 },
   descText: { color: '#666', fontSize: 14, lineHeight: 26 },
 });

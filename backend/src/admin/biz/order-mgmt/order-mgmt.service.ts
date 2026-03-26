@@ -60,16 +60,24 @@ export class OrderMgmtService {
   }
 
   async detail(id: number) {
-    const order = await this.orderRepo.findOneBy({ id });
-    if (!order) {
-      throw new BadRequestException('订单不存在');
-    }
+    const qb = this.orderRepo
+      .createQueryBuilder('o')
+      .leftJoin('users', 'u', 'u.id = o.user_id')
+      .addSelect(['u.phone AS userPhone', 'u.nickname AS userNickname'])
+      .where('o.id = :id', { id });
 
-    const items = await this.orderItemRepo.find({
-      where: { orderId: id },
-    });
+    const result = await qb.getRawAndEntities();
+    const order = result.entities[0];
+    if (!order) throw new BadRequestException('订单不存在');
 
-    return { ...order, items };
+    const items = await this.orderItemRepo.find({ where: { orderId: id } });
+
+    return {
+      ...order,
+      userPhone: result.raw[0]?.userPhone ?? null,
+      userNickname: result.raw[0]?.userNickname ?? null,
+      items,
+    };
   }
 
   async updateStatus(id: number, newStatus: string) {
@@ -79,7 +87,9 @@ export class OrderMgmtService {
     }
 
     const allowedTransitions: Record<string, string[]> = {
+      pending: ['cancelled'],
       paid: ['shipped', 'cancelled'],
+      shipped: ['done'],
     };
 
     const allowed = allowedTransitions[order.status];
@@ -89,7 +99,11 @@ export class OrderMgmtService {
       );
     }
 
-    await this.orderRepo.update(id, { status: newStatus });
+    const updateData: any = { status: newStatus };
+    if (newStatus === 'shipped') updateData.shippedAt = new Date();
+    if (newStatus === 'done') updateData.completedAt = new Date();
+    if (newStatus === 'cancelled') updateData.remark = '管理员取消';
+    await this.orderRepo.update(id, updateData);
     return { message: '状态更新成功' };
   }
 }

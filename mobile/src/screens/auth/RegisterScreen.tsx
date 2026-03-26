@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
-import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '../../constants/theme';
 
 export default function RegisterScreen() {
   const navigation = useNavigation<any>();
@@ -211,19 +211,19 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.xxl },
   header: { paddingTop: Spacing.lg, marginBottom: 30 },
   backBtn: { fontSize: FontSize.lg, color: Colors.textSecondary, marginBottom: Spacing.lg },
-  title: { fontSize: FontSize.xxl + 2, fontWeight: 'bold', color: Colors.textPrimary },
+  title: { fontSize: FontSize.xxl + 2, fontFamily: Fonts.bold, color: Colors.textPrimary },
   inputRow: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg, height: 50, marginBottom: Spacing.lg,
   },
   inputError: { borderColor: Colors.primary },
-  prefix: { fontSize: FontSize.lg, color: Colors.textPrimary, fontWeight: '500' },
+  prefix: { fontSize: FontSize.lg, color: Colors.textPrimary, fontFamily: Fonts.numMedium },
   inputDivider: { width: 1, height: 20, backgroundColor: Colors.border, marginHorizontal: Spacing.md },
   input: { flex: 1, fontSize: FontSize.lg, color: Colors.textPrimary, padding: 0 },
   codeBtn: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderLeftWidth: 1, borderLeftColor: Colors.border, marginLeft: Spacing.sm },
   codeBtnDisabled: { opacity: 0.5 },
-  codeBtnText: { fontSize: FontSize.sm, color: Colors.primary, fontWeight: 'bold' },
+  codeBtnText: { fontSize: FontSize.sm, color: Colors.primary, fontFamily: Fonts.bold },
   codeBtnTextDisabled: { color: Colors.textTertiary },
   eyeIcon: { fontSize: 20, paddingLeft: Spacing.sm },
   registerBtn: {
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.xxl,
   },
   registerBtnDisabled: { opacity: 0.6 },
-  registerBtnText: { color: Colors.textWhite, fontSize: FontSize.lg, fontWeight: 'bold' },
+  registerBtnText: { color: Colors.textWhite, fontSize: FontSize.lg, fontFamily: Fonts.bold },
   agreementRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: Spacing.lg },
   agreeCheckbox: {
     width: 18, height: 18, borderRadius: 9, borderWidth: 1.5,
@@ -239,10 +239,10 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm, marginTop: 2,
   },
   agreeCheckboxChecked: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  agreeCheckmark: { color: Colors.textWhite, fontSize: 12, fontWeight: 'bold' },
+  agreeCheckmark: { color: Colors.textWhite, fontSize: 12, fontFamily: Fonts.bold },
   agreementText: { flex: 1, fontSize: FontSize.sm, color: Colors.textTertiary, lineHeight: 20 },
   agreementLink: { color: Colors.primary },
   loginLink: { alignItems: 'center', paddingBottom: 30 },
   loginLinkText: { fontSize: FontSize.md, color: Colors.textSecondary },
-  loginHighlight: { color: Colors.primary, fontWeight: 'bold' },
+  loginHighlight: { color: Colors.primary, fontFamily: Fonts.bold },
 });

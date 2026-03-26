@@ -1,18 +1,8 @@
-import React, { useRef } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  PanResponder,
-  Alert,
-} from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize } from '../../constants/theme';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Spacing, Fonts } from '../../constants/theme';
 import type { CartItemCardProps } from './types';
-
-const DELETE_WIDTH = 80;
 
 export default function CartItemCard({
   item,
@@ -20,33 +10,6 @@ export default function CartItemCard({
   onUpdateQuantity,
   onRemove,
 }: CartItemCardProps) {
-  const translateX = useRef(new Animated.Value(0)).current;
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) =>
-        Math.abs(gesture.dx) > 10 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dx < 0) {
-          translateX.setValue(Math.max(gesture.dx, -DELETE_WIDTH));
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dx < -40) {
-          Animated.spring(translateX, {
-            toValue: -DELETE_WIDTH,
-            useNativeDriver: true,
-          }).start();
-        } else {
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
   const handleDecrement = () => {
     if (item.quantity <= 1) {
       Alert.alert('提示', '确认删除该商品？', [
@@ -58,164 +21,149 @@ export default function CartItemCard({
     }
   };
 
+  const hasDiscount = item.product.originalPrice && item.product.originalPrice !== item.product.price;
+  const savings = hasDiscount
+    ? (parseFloat(item.product.originalPrice!) - parseFloat(item.product.price)).toFixed(2)
+    : null;
+
   return (
-    <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.deleteBtn} onPress={onRemove}>
-        <Text style={styles.deleteText}>删除</Text>
-      </TouchableOpacity>
+    <View style={styles.card}>
+      <Image
+        source={{ uri: item.product.images[0] }}
+        style={styles.image}
+        resizeMode="cover"
+      />
 
-      <Animated.View
-        style={[styles.card, { transform: [{ translateX }] }]}
-        {...panResponder.panHandlers}
-      >
-        <TouchableOpacity onPress={onToggleSelect} style={styles.checkbox}>
-          <View
-            style={[
-              styles.checkboxInner,
-              item.selected && styles.checkboxChecked,
-            ]}
-          >
-            {item.selected && <Text style={styles.checkmark}>✓</Text>}
+      <View style={styles.info}>
+        <View style={styles.topRow}>
+          <Text style={styles.name} numberOfLines={1}>{item.product.name}</Text>
+          <TouchableOpacity onPress={onRemove} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="close" size={14} color={Colors.bodyGray} />
+          </TouchableOpacity>
+        </View>
+
+        {item.spec && <Text style={styles.spec}>{item.spec}</Text>}
+
+        {savings && (
+          <View style={styles.savingsRow}>
+            <Ionicons name="pricetag" size={10} color={Colors.priceOrange} />
+            <Text style={styles.savingsText}>即时立减: -¥{savings}</Text>
           </View>
-        </TouchableOpacity>
+        )}
 
-        <Image
-          source={{ uri: item.product.images[0] }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-
-        <View style={styles.info}>
-          <Text style={styles.name} numberOfLines={2}>
-            {item.product.name}
-          </Text>
-          {item.spec && <Text style={styles.spec}>{item.spec}</Text>}
-          <View style={styles.bottomRow}>
+        <View style={styles.bottomRow}>
+          <View style={styles.priceWrap}>
+            {hasDiscount && (
+              <Text style={styles.originalPrice}>¥{item.product.originalPrice}</Text>
+            )}
             <Text style={styles.price}>¥{item.product.price}</Text>
-            <View style={styles.quantity}>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={handleDecrement}
-              >
-                <Text style={styles.qtyBtnText}>−</Text>
-              </TouchableOpacity>
-              <Text style={styles.qtyText}>{item.quantity}</Text>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => onUpdateQuantity(item.quantity + 1)}
-              >
-                <Text style={styles.qtyBtnText}>+</Text>
-              </TouchableOpacity>
-            </View>
+          </View>
+
+          <View style={styles.stepper}>
+            <TouchableOpacity style={styles.stepBtn} onPress={handleDecrement}>
+              <Ionicons name="remove" size={12} color={Colors.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.stepQty}>{item.quantity}</Text>
+            <TouchableOpacity style={styles.stepBtn} onPress={() => onUpdateQuantity(item.quantity + 1)}>
+              <Ionicons name="add" size={12} color={Colors.textPrimary} />
+            </TouchableOpacity>
           </View>
         </View>
-      </Animated.View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    position: 'relative',
-    marginBottom: Spacing.sm,
-  },
-  deleteBtn: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: DELETE_WIDTH,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopRightRadius: BorderRadius.md,
-    borderBottomRightRadius: BorderRadius.md,
-  },
-  deleteText: {
-    color: Colors.textWhite,
-    fontSize: FontSize.md,
-    fontWeight: 'bold',
-  },
   card: {
     flexDirection: 'row',
     backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-  },
-  checkbox: {
-    marginRight: Spacing.md,
-  },
-  checkboxInner: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  checkmark: {
-    color: Colors.textWhite,
-    fontSize: 14,
-    fontWeight: 'bold',
+    borderRadius: 12,
+    padding: 16,
+    gap: 16,
+    marginBottom: 16,
   },
   image: {
-    width: 80,
-    height: 80,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surfaceSecondary,
-    marginRight: Spacing.md,
+    width: 96,
+    height: 96,
+    borderRadius: 8,
+    backgroundColor: '#EEE',
   },
   info: {
     flex: 1,
+    justifyContent: 'space-between',
+    minHeight: 96,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
   },
   name: {
-    fontSize: FontSize.md,
+    fontSize: 14,
+    fontFamily: Fonts.medium,
     color: Colors.textPrimary,
-    lineHeight: 20,
-    marginBottom: Spacing.xs,
+    flex: 1,
+    lineHeight: 19,
   },
   spec: {
-    fontSize: FontSize.xs,
-    color: Colors.textTertiary,
-    marginBottom: Spacing.xs,
+    fontSize: 11,
+    color: Colors.bodyGray,
+    lineHeight: 17,
+    marginTop: 2,
+  },
+  savingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  savingsText: {
+    fontSize: 10,
+    color: Colors.priceOrange,
+    fontFamily: Fonts.bold,
   },
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    marginTop: 'auto' as any,
+  },
+  priceWrap: {
+    gap: 0,
+  },
+  originalPrice: {
+    fontSize: 12,
+    color: Colors.bodyGray,
+    textDecorationLine: 'line-through',
+    lineHeight: 16,
   },
   price: {
-    fontSize: FontSize.lg,
-    fontWeight: 'bold',
-    color: Colors.primary,
+    fontSize: 18,
+    fontFamily: Fonts.numBlack,
+    color: Colors.textPrimary,
+    lineHeight: 28,
   },
-  quantity: {
+  stepper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: BorderRadius.sm,
+    backgroundColor: '#E2E2E2',
+    borderRadius: 8,
+    padding: 4,
   },
-  qtyBtn: {
-    width: 28,
-    height: 28,
+  stepBtn: {
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 4,
   },
-  qtyBtnText: {
-    fontSize: FontSize.lg,
-    color: Colors.textSecondary,
-  },
-  qtyText: {
-    fontSize: FontSize.md,
+  stepQty: {
+    fontSize: 14,
+    fontFamily: Fonts.numBold,
     color: Colors.textPrimary,
-    minWidth: 28,
+    minWidth: 32,
     textAlign: 'center',
   },
 });

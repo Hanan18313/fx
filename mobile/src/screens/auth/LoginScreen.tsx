@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
-import { Colors, Spacing, FontSize, BorderRadius } from '../../constants/theme';
+import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '../../constants/theme';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const TAB_WIDTH = (SCREEN_WIDTH - Spacing.xxl * 2) / 2;
@@ -309,12 +309,12 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
     color: Colors.textWhite,
   },
   welcome: {
     fontSize: FontSize.xl,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
     color: Colors.textPrimary,
   },
   tabContainer: {
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   tabIndicator: {
     position: 'absolute',
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   prefix: {
     fontSize: FontSize.lg,
     color: Colors.textPrimary,
-    fontWeight: '500',
+    fontFamily: Fonts.numMedium,
   },
   inputDivider: {
     width: 1,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   codeBtnText: {
     fontSize: FontSize.sm,
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   codeBtnTextDisabled: {
     color: Colors.textTertiary,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   loginBtnText: {
     color: Colors.textWhite,
     fontSize: FontSize.lg,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   dividerRow: {
     flexDirection: 'row',
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   },
   registerHighlight: {
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   agreementRow: {
     flexDirection: 'row',
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   agreeCheckmark: {
     color: Colors.textWhite,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   agreementText: {
     flex: 1,

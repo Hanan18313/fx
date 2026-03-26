@@ -20,6 +20,12 @@ import { SysOperationLogEntity } from "./database/entities/sys-operation-log.ent
 import { SysLoginLogEntity } from "./database/entities/sys-login-log.entity";
 import { PromotionRewardEntity } from "./database/entities/promotion-reward.entity";
 import { PromotionConfigEntity } from "./database/entities/promotion-config.entity";
+import { AddressEntity } from "./database/entities/address.entity";
+import { CategoryEntity } from "./database/entities/category.entity";
+import { BannerEntity } from "./database/entities/banner.entity";
+import { FavoriteEntity } from "./database/entities/favorite.entity";
+import { ReviewEntity } from "./database/entities/review.entity";
+import { NotificationEntity } from "./database/entities/notification.entity";
 import { AuthModule } from "./auth/auth.module";
 import { ShopModule } from "./shop/shop.module";
 import { OrderModule } from "./order/order.module";
@@ -27,6 +33,13 @@ import { ProfitModule } from "./profit/profit.module";
 import { WalletModule } from "./wallet/wallet.module";
 import { AdminModule } from "./admin/admin.module";
 import { PromotionModule } from "./promotion/promotion.module";
+import { AddressModule } from "./address/address.module";
+import { CategoryModule } from "./category/category.module";
+import { BannerModule } from "./banner/banner.module";
+import { UserModule } from "./user/user.module";
+import { FavoriteModule } from "./favorite/favorite.module";
+import { ReviewModule } from "./review/review.module";
+import { NotificationModule } from "./notification/notification.module";
 import { RedisModule } from "./common/redis/redis.module";
 
 @Module({
@@ -62,6 +75,12 @@ import { RedisModule } from "./common/redis/redis.module";
           SysLoginLogEntity,
           PromotionRewardEntity,
           PromotionConfigEntity,
+          AddressEntity,
+          CategoryEntity,
+          BannerEntity,
+          FavoriteEntity,
+          ReviewEntity,
+          NotificationEntity,
         ],
         synchronize: false, // 不自动改表，使用 init.sql 管理表结构
         timezone: "+08:00",
@@ -87,6 +106,13 @@ import { RedisModule } from "./common/redis/redis.module";
     ProfitModule,
     WalletModule,
     PromotionModule,
+    AddressModule,
+    CategoryModule,
+    BannerModule,
+    UserModule,
+    FavoriteModule,
+    ReviewModule,
+    NotificationModule,
     AdminModule,
   ],
 })

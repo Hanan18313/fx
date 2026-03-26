@@ -22,4 +22,5 @@ export interface SectionHeaderProps {
   title: string;
   showMore?: boolean;
   onMore?: () => void;
+  variant?: 'default' | 'large';
 }

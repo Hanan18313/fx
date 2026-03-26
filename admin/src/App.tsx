@@ -17,6 +17,10 @@ import OrderDetailPage from './pages/order/detail';
 import WithdrawalListPage from './pages/withdrawal/index';
 import ProfitPage from './pages/profit/index';
 import PromotionPage from './pages/promotion/index';
+import CategoryPage from './pages/category/index';
+import BannerPage from './pages/banner/index';
+import ReviewPage from './pages/review/index';
+import NotificationPage from './pages/notification/index';
 
 const App: React.FC = () => {
   return (
@@ -45,6 +49,10 @@ const App: React.FC = () => {
           <Route path="finance/withdrawals" element={<WithdrawalListPage />} />
           <Route path="profit" element={<ProfitPage />} />
           <Route path="promotion" element={<PromotionPage />} />
+          <Route path="content/categories" element={<CategoryPage />} />
+          <Route path="content/banners" element={<BannerPage />} />
+          <Route path="reviews" element={<ReviewPage />} />
+          <Route path="notifications" element={<NotificationPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

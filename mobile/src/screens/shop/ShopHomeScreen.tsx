@@ -12,12 +12,18 @@ import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { useCartStore } from '../../store/cartStore';
 import { Colors, Spacing, FontSize } from '../../constants/theme';
-import { mockBanners, mockQuickCategories, mockProducts } from '../../constants/mockData';
+import {
+  mockBanners,
+  mockQuickCategories,
+  mockProducts,
+  mockFlashSaleProducts,
+} from '../../constants/mockData';
 import SearchBar from '../../components/common/SearchBar';
 import BannerCarousel from '../../components/shop/BannerCarousel';
 import QuickCategoryGrid from '../../components/shop/QuickCategoryGrid';
 import SectionHeader from '../../components/shop/SectionHeader';
-import ProductCard from '../../components/shop/ProductCard';
+import FlashSalesSection from '../../components/shop/FlashSalesSection';
+import LargeRecommendCard from '../../components/shop/LargeRecommendCard';
 import type { Product } from '../../types/product';
 import type { Banner } from '../../types/banner';
 import type { QuickCategory } from '../../types/category';
@@ -27,8 +33,8 @@ export default function ShopHomeScreen() {
   const addItem = useCartStore((s) => s.addItem);
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [banners] = useState<Banner[]>(mockBanners);
-  const [quickCategories] = useState<QuickCategory[]>(mockQuickCategories);
+  const [banners, setBanners] = useState<Banner[]>(mockBanners);
+  const [quickCategories, setQuickCategories] = useState<QuickCategory[]>(mockQuickCategories);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -61,12 +67,34 @@ export default function ShopHomeScreen() {
         setRefreshing(false);
       }
     },
-    [keyword, loading]
+    [keyword, loading],
   );
 
   useEffect(() => {
     fetchProducts(1, true);
+    fetchBanners();
+    fetchQuickCategories();
   }, []);
+
+  const fetchBanners = async () => {
+    try {
+      const { data } = await api.get('/banners');
+      const list = data.data ?? data;
+      if (Array.isArray(list) && list.length > 0) setBanners(list);
+    } catch {
+      /* keep mock */
+    }
+  };
+
+  const fetchQuickCategories = async () => {
+    try {
+      const { data } = await api.get('/categories/quick');
+      const list = data.data ?? data;
+      if (Array.isArray(list) && list.length > 0) setQuickCategories(list);
+    } catch {
+      /* keep mock */
+    }
+  };
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -80,7 +108,11 @@ export default function ShopHomeScreen() {
   };
 
   const handleSearch = () => {
-    fetchProducts(1, true);
+    if (keyword.trim()) {
+      navigation.navigate('Search', { keyword: keyword.trim() });
+    } else {
+      navigation.navigate('Search');
+    }
   };
 
   const handleAddToCart = (product: Product) => {
@@ -99,11 +131,12 @@ export default function ShopHomeScreen() {
   const ListHeader = () => (
     <>
       <BannerCarousel banners={banners} />
-      <QuickCategoryGrid
-        categories={quickCategories}
-        onPress={handleCategoryPress}
-      />
-      <SectionHeader title="为你推荐" />
+
+      <QuickCategoryGrid categories={quickCategories} onPress={handleCategoryPress} />
+
+      <FlashSalesSection products={mockFlashSaleProducts} />
+
+      <SectionHeader title="为您推荐" variant="large" />
     </>
   );
 
@@ -112,7 +145,7 @@ export default function ShopHomeScreen() {
       return (
         <ActivityIndicator
           style={{ paddingVertical: 20 }}
-          color={Colors.primary}
+          color={Colors.navyButton}
         />
       );
     }
@@ -132,16 +165,16 @@ export default function ShopHomeScreen() {
       <FlatList
         data={products}
         keyExtractor={(item) => String(item.id)}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
         ListHeaderComponent={ListHeader}
         ListFooterComponent={ListFooter}
         renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={() => handleProductPress(item)}
-            onAddToCart={handleAddToCart}
-          />
+          <View style={styles.cardWrapper}>
+            <LargeRecommendCard
+              product={item}
+              onPress={() => handleProductPress(item)}
+              onAddToCart={handleAddToCart}
+            />
+          </View>
         )}
         onRefresh={handleRefresh}
         refreshing={refreshing}
@@ -162,9 +195,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: Spacing.lg,
   },
-  row: {
-    paddingHorizontal: Spacing.lg,
-    justifyContent: 'space-between',
+  cardWrapper: {
+    paddingHorizontal: Spacing.xxl,
+    paddingTop: Spacing.xxl,
   },
   noMore: {
     textAlign: 'center',

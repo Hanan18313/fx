@@ -14,6 +14,9 @@ export class OrderItemEntity {
   @Column({ name: 'product_name', length: 200 })
   productName: string;
 
+  @Column({ name: 'product_image', length: 500, nullable: true })
+  productImage: string;
+
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 

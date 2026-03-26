@@ -1,15 +1,24 @@
 import React from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize } from '../../constants/theme';
+import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, BorderRadius, Spacing, FontSize, Fonts } from '../../constants/theme';
 import type { SearchBarProps } from './types';
 
-export default function SearchBar({ value, onChangeText, onSubmit, placeholder = '搜索商品...' }: SearchBarProps) {
+export default function SearchBar({
+  value,
+  onChangeText,
+  onSubmit,
+  placeholder = '搜索商品...',
+}: SearchBarProps) {
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <Text style={styles.location}>📍</Text>
-        <View style={styles.searchBox}>
-          <Text style={styles.searchIcon}>🔍</Text>
+        <TouchableOpacity style={styles.locationBtn}>
+          <Ionicons name="location-outline" size={20} color={Colors.navy} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.searchBox} onPress={onSubmit} activeOpacity={0.8}>
+          <Ionicons name="search-outline" size={16} color={Colors.textTertiary} />
           <TextInput
             style={styles.input}
             placeholder={placeholder}
@@ -19,9 +28,10 @@ export default function SearchBar({ value, onChangeText, onSubmit, placeholder =
             onSubmitEditing={onSubmit}
             returnKeyType="search"
           />
-        </View>
-        <TouchableOpacity>
-          <Text style={styles.scanIcon}>📷</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.scanBtn}>
+          <Ionicons name="scan-outline" size={22} color={Colors.navy} />
         </TouchableOpacity>
       </View>
     </View>
@@ -30,40 +40,36 @@ export default function SearchBar({ value, onChangeText, onSubmit, placeholder =
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xxl,
     paddingBottom: Spacing.md,
     paddingTop: Spacing.sm,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
-  location: {
-    fontSize: FontSize.xl,
-    marginRight: Spacing.sm,
+  locationBtn: {
+    padding: 2,
   },
   searchBox: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.md,
-    height: 36,
-  },
-  searchIcon: {
-    fontSize: FontSize.md,
-    marginRight: Spacing.xs,
+    height: 40,
+    gap: 8,
   },
   input: {
     flex: 1,
     fontSize: FontSize.md,
+    fontFamily: Fonts.regular,
     color: Colors.textPrimary,
     padding: 0,
   },
-  scanIcon: {
-    fontSize: FontSize.xl,
-    marginLeft: Spacing.sm,
+  scanBtn: {
+    padding: 2,
   },
 });

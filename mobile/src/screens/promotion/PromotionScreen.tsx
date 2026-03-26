@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
-import { Colors, Spacing, BorderRadius, FontSize } from '../../constants/theme';
+import { Colors, Spacing, BorderRadius, FontSize, Fonts } from '../../constants/theme';
 
 interface PromotionStats {
   invite_count: number;
@@ -61,8 +61,14 @@ export default function PromotionScreen() {
     }
   };
 
-  const handleCopyCode = () => {
-    Alert.alert('邀请码已复制', inviteCode);
+  const handleCopyCode = async () => {
+    try {
+      const Clipboard = await import('expo-clipboard');
+      await Clipboard.setStringAsync(inviteCode);
+      Alert.alert('', '邀请码已复制到剪贴板');
+    } catch {
+      Alert.alert('邀请码', inviteCode);
+    }
   };
 
   if (loading) {
@@ -172,7 +178,7 @@ const styles = StyleSheet.create({
   heroValue: {
     color: Colors.textWhite,
     fontSize: 36,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     marginBottom: Spacing.xl,
   },
   heroRow: {
@@ -189,7 +195,7 @@ const styles = StyleSheet.create({
   heroItemValue: {
     color: Colors.textWhite,
     fontSize: FontSize.lg,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     marginBottom: 2,
   },
   heroItemLabel: {
@@ -220,7 +226,7 @@ const styles = StyleSheet.create({
   },
   codeText: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     color: Colors.primary,
     letterSpacing: 4,
     marginRight: Spacing.md,
@@ -245,7 +251,7 @@ const styles = StyleSheet.create({
   shareBtnText: {
     color: Colors.textWhite,
     fontSize: FontSize.lg,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   menuCard: {
     backgroundColor: Colors.surface,
@@ -273,7 +279,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: FontSize.lg,
     color: Colors.textPrimary,
-    fontWeight: '500',
+    fontFamily: Fonts.medium,
   },
   menuSubtitle: {
     fontSize: FontSize.sm,
@@ -298,7 +304,7 @@ const styles = StyleSheet.create({
   },
   tipsTitle: {
     fontSize: FontSize.lg,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
     color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },

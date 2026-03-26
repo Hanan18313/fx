@@ -22,6 +22,9 @@
       },
       "package": "com.yourcompany.mallprofit"
     },
-    "plugins": ["expo-notifications"]
+    "plugins": [
+      "expo-notifications",
+      "expo-font"
+    ]
   }
 }

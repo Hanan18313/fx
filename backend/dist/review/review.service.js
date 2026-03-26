@@ -1,0 +1,100 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ReviewService = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const review_entity_1 = require("../database/entities/review.entity");
+const order_entity_1 = require("../database/entities/order.entity");
+const user_entity_1 = require("../database/entities/user.entity");
+let ReviewService = class ReviewService {
+    constructor(reviewRepo, orderRepo, userRepo) {
+        this.reviewRepo = reviewRepo;
+        this.orderRepo = orderRepo;
+        this.userRepo = userRepo;
+    }
+    async create(userId, dto) {
+        const order = await this.orderRepo.findOne({
+            where: { id: dto.order_id, userId },
+        });
+        if (!order)
+            throw new common_1.BadRequestException('订单不存在');
+        if (order.status !== 'done')
+            throw new common_1.BadRequestException('订单未完成，无法评价');
+        const existing = await this.reviewRepo.findOne({
+            where: { userId, orderId: dto.order_id, productId: dto.product_id },
+        });
+        if (existing)
+            throw new common_1.BadRequestException('已评价过该商品');
+        const review = this.reviewRepo.create({
+            userId,
+            productId: dto.product_id,
+            orderId: dto.order_id,
+            rating: dto.rating ?? 5,
+            content: dto.content,
+            images: dto.images,
+            isAnonymous: dto.is_anonymous ?? 0,
+        });
+        const saved = await this.reviewRepo.save(review);
+        return saved;
+    }
+    async getProductReviews(productId, page = 1, limit = 20) {
+        const [reviews, total] = await this.reviewRepo.findAndCount({
+            where: { productId },
+            order: { id: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+        if (reviews.length === 0)
+            return { data: [], total, page };
+        const userIds = [...new Set(reviews.map((r) => r.userId))];
+        const users = await this.userRepo
+            .createQueryBuilder('u')
+            .where('u.id IN (:...ids)', { ids: userIds })
+            .select(['u.id', 'u.nickname', 'u.avatar', 'u.phone'])
+            .getMany();
+        const userMap = new Map(users.map((u) => [u.id, u]));
+        const data = reviews.map((r) => {
+            const user = userMap.get(r.userId);
+            let nickname = '匿名用户';
+            let avatar = null;
+            if (user && r.isAnonymous !== 1) {
+                nickname = user.nickname || user.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+                avatar = user.avatar;
+            }
+            return {
+                id: r.id,
+                rating: r.rating,
+                content: r.content,
+                images: r.images,
+                nickname,
+                avatar,
+                created_at: r.createdAt,
+            };
+        });
+        return { data, total, page };
+    }
+};
+exports.ReviewService = ReviewService;
+exports.ReviewService = ReviewService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(review_entity_1.ReviewEntity)),
+    __param(1, (0, typeorm_1.InjectRepository)(order_entity_1.OrderEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
+], ReviewService);
+//# sourceMappingURL=review.service.js.map

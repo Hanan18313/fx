@@ -402,3 +402,213 @@ INSERT IGNORE INTO sys_admin (id, username, password, real_name, dept_id, create
 
 -- 超级管理员绑定角色
 INSERT IGNORE INTO sys_admin_role (admin_id, role_id) VALUES (1, 1);
+
+-- ============================================
+-- 收货地址表
+-- ============================================
+CREATE TABLE IF NOT EXISTS addresses (
+  id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id     BIGINT NOT NULL,
+  name        VARCHAR(50) NOT NULL COMMENT '收货人',
+  phone       VARCHAR(20) NOT NULL,
+  province    VARCHAR(50) NOT NULL,
+  city        VARCHAR(50) NOT NULL,
+  district    VARCHAR(50) NOT NULL,
+  detail      VARCHAR(200) NOT NULL COMMENT '详细地址',
+  is_default  TINYINT NOT NULL DEFAULT 0,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收货地址';
+
+-- ============================================
+-- 分类表
+-- ============================================
+CREATE TABLE IF NOT EXISTS categories (
+  id        BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name      VARCHAR(50) NOT NULL,
+  icon      VARCHAR(50) DEFAULT NULL,
+  parent_id BIGINT DEFAULT NULL,
+  sort      INT DEFAULT 0,
+  status    TINYINT DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品分类';
+
+-- ============================================
+-- Banner表
+-- ============================================
+CREATE TABLE IF NOT EXISTS banners (
+  id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+  image_url  VARCHAR(500) NOT NULL,
+  title      VARCHAR(100) DEFAULT NULL,
+  link_type  VARCHAR(20) DEFAULT NULL COMMENT 'product/category/url',
+  link_value VARCHAR(200) DEFAULT NULL,
+  sort       INT DEFAULT 0,
+  status     TINYINT DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='轮播图';
+
+-- ============================================
+-- 收藏表
+-- ============================================
+CREATE TABLE IF NOT EXISTS favorites (
+  id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id    BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_user_product (user_id, product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品收藏';
+
+-- ============================================
+-- 评价表
+-- ============================================
+CREATE TABLE IF NOT EXISTS reviews (
+  id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id     BIGINT NOT NULL,
+  product_id  BIGINT NOT NULL,
+  order_id    BIGINT NOT NULL,
+  rating      TINYINT NOT NULL DEFAULT 5,
+  content     TEXT DEFAULT NULL,
+  images      JSON DEFAULT NULL,
+  is_anonymous TINYINT DEFAULT 0,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_product_id (product_id),
+  KEY idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品评价';
+
+-- ============================================
+-- 通知表
+-- ============================================
+CREATE TABLE IF NOT EXISTS notifications (
+  id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id    BIGINT NOT NULL,
+  type       ENUM('system','order','profit') NOT NULL DEFAULT 'system',
+  title      VARCHAR(100) NOT NULL,
+  content    TEXT NOT NULL,
+  is_read    TINYINT DEFAULT 0,
+  link_type  VARCHAR(20) DEFAULT NULL,
+  link_value VARCHAR(100) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_user_id (user_id),
+  KEY idx_is_read (is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息通知';
+
+-- ============================================
+-- orders 表新增字段
+-- ============================================
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_no VARCHAR(32) DEFAULT NULL AFTER id;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS address_id BIGINT DEFAULT NULL AFTER remark;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS address_snapshot JSON DEFAULT NULL AFTER address_id;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS freight_amount DECIMAL(10,2) DEFAULT 0.00 AFTER total_amount;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0.00 AFTER freight_amount;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS pay_amount DECIMAL(10,2) DEFAULT NULL AFTER discount_amount;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipped_at TIMESTAMP DEFAULT NULL AFTER paid_at;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP DEFAULT NULL AFTER shipped_at;
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS product_image VARCHAR(500) DEFAULT NULL AFTER product_name;
+
+-- ============================================
+-- 分类种子数据
+-- ============================================
+INSERT IGNORE INTO categories (id, name, icon, parent_id, sort) VALUES
+  (1, '新鲜果蔬', '🥬', NULL, 1),
+  (2, '肉禽蛋奶', '🥩', NULL, 2),
+  (3, '休闲零食', '🍪', NULL, 3),
+  (4, '酒水饮料', '🧃', NULL, 4),
+  (5, '粮油调味', '🍚', NULL, 5),
+  (6, '个人护理', '🧴', NULL, 6),
+  (7, '家居清洁', '🧺', NULL, 7),
+  (8, '母婴用品', '🍼', NULL, 8),
+  (11, '新鲜水果', '🍎', 1, 1),
+  (12, '新鲜蔬菜', '🥬', 1, 2),
+  (13, '菌菇豆制', '🍄', 1, 3),
+  (21, '猪肉', '🥩', 2, 1),
+  (22, '牛羊肉', '🍖', 2, 2),
+  (23, '鸡鸭鹅', '🍗', 2, 3),
+  (24, '蛋类', '🥚', 2, 4),
+  (31, '坚果炒货', '🥜', 3, 1),
+  (32, '饼干糕点', '🍪', 3, 2),
+  (33, '糖果巧克力', '🍬', 3, 3),
+  (41, '白酒', '🍶', 4, 1),
+  (42, '啤酒', '🍺', 4, 2),
+  (43, '果汁饮料', '🧃', 4, 3),
+  (44, '茶饮', '🍵', 4, 4),
+  (51, '大米', '🍚', 5, 1),
+  (52, '食用油', '🫒', 5, 2),
+  (53, '调味品', '🧂', 5, 3),
+  (61, '洗发护发', '🧴', 6, 1),
+  (62, '口腔护理', '🪥', 6, 2),
+  (63, '面部护肤', '🧖', 6, 3),
+  (71, '衣物清洁', '🧺', 7, 1),
+  (72, '纸品', '🧻', 7, 2),
+  (81, '奶粉', '🍼', 8, 1),
+  (82, '纸尿裤', '👶', 8, 2),
+  (83, '辅食', '🥣', 8, 3);
+
+-- ============================================
+-- Banner种子数据
+-- ============================================
+INSERT IGNORE INTO banners (id, image_url, title, link_type, sort) VALUES
+  (1, 'https://via.placeholder.com/750x300/E53935/fff?text=新品上市', '新品上市', NULL, 1),
+  (2, 'https://via.placeholder.com/750x300/F57C00/fff?text=限时特惠', '限时特惠', NULL, 2),
+  (3, 'https://via.placeholder.com/750x300/388E3C/fff?text=会员专享', '会员专享', NULL, 3);
+
+-- ============================================
+-- 新增管理菜单
+-- ============================================
+INSERT IGNORE INTO sys_menu (id, parent_id, name, type, permission, path, component, icon, sort) VALUES
+  (29, 0,  '内容管理', 1, NULL, '/content', NULL, 'Picture', 7),
+  (30, 29, '分类管理', 2, 'category:list', '/content/categories', 'content/category/index', 'Folder', 1),
+  (31, 30, '新增分类', 3, 'category:create', NULL, NULL, NULL, 1),
+  (32, 30, '编辑分类', 3, 'category:update', NULL, NULL, NULL, 2),
+  (33, 30, '删除分类', 3, 'category:delete', NULL, NULL, NULL, 3),
+  (34, 29, 'Banner管理', 2, 'banner:list', '/content/banners', 'content/banner/index', 'PictureFilled', 2),
+  (35, 34, '新增Banner', 3, 'banner:create', NULL, NULL, NULL, 1),
+  (36, 34, '编辑Banner', 3, 'banner:update', NULL, NULL, NULL, 2),
+  (37, 34, '删除Banner', 3, 'banner:delete', NULL, NULL, NULL, 3),
+  (38, 0,  '评价管理', 2, 'review:list', '/reviews', 'review/index', 'MessageBox', 8),
+  (39, 38, '删除评价', 3, 'review:delete', NULL, NULL, NULL, 1),
+  (40, 0,  '通知管理', 2, 'notification:list', '/notifications', 'notification/index', 'Bell', 9),
+  (41, 40, '发送通知', 3, 'notification:create', NULL, NULL, NULL, 1),
+  (42, 40, '删除通知', 3, 'notification:delete', NULL, NULL, NULL, 2);
+
+-- 超级管理员获得新菜单权限
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+SELECT 1, id FROM sys_menu WHERE id >= 29;
+
+-- 管理员获得新菜单权限
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+SELECT 2, id FROM sys_menu WHERE id >= 29;
+
+-- 运营获得内容管理+评价
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id) VALUES
+  (5, 29),(5, 30),(5, 31),(5, 32),(5, 33),(5, 34),(5, 35),(5, 36),(5, 37),(5, 38),(5, 39),
+  (6, 29),(6, 30),(6, 34),(6, 38);
+
+-- ============================================
+-- 新增管理菜单（内容管理、评价管理、通知管理）
+-- ============================================
+INSERT IGNORE INTO sys_menu (id, parent_id, name, type, permission, path, component, icon, sort) VALUES
+  (29, 0,  '内容管理',   1, NULL,                '/content',            NULL,                          'Picture',       7),
+  (30, 29, '分类管理',   2, 'category:list',     '/content/categories', 'content/category/index',      'Folder',        1),
+  (31, 30, '新增分类',   3, 'category:create',   NULL,                  NULL,                          NULL,            1),
+  (32, 30, '编辑分类',   3, 'category:update',   NULL,                  NULL,                          NULL,            2),
+  (33, 30, '删除分类',   3, 'category:delete',   NULL,                  NULL,                          NULL,            3),
+  (34, 29, 'Banner管理', 2, 'banner:list',       '/content/banners',    'content/banner/index',        'PictureFilled', 2),
+  (35, 34, '新增Banner', 3, 'banner:create',     NULL,                  NULL,                          NULL,            1),
+  (36, 34, '编辑Banner', 3, 'banner:update',     NULL,                  NULL,                          NULL,            2),
+  (37, 34, '删除Banner', 3, 'banner:delete',     NULL,                  NULL,                          NULL,            3),
+  (38, 0,  '评价管理',   2, 'review:list',       '/reviews',            'review/index',                'MessageBox',    8),
+  (39, 38, '删除评价',   3, 'review:delete',     NULL,                  NULL,                          NULL,            1),
+  (40, 0,  '通知管理',   2, 'notification:list', '/notifications',      'notification/index',          'Bell',          9),
+  (41, 40, '发送通知',   3, 'notification:create', NULL,                NULL,                          NULL,            1),
+  (42, 40, '删除通知',   3, 'notification:delete', NULL,                NULL,                          NULL,            2);
+
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+SELECT 1, id FROM sys_menu WHERE id >= 29;
+
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+SELECT 2, id FROM sys_menu WHERE id >= 29;
+
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id) VALUES
+  (5, 29),(5, 30),(5, 31),(5, 32),(5, 33),(5, 34),(5, 35),(5, 36),(5, 37),(5, 38),(5, 39),
+  (6, 29),(6, 30),(6, 34),(6, 38);

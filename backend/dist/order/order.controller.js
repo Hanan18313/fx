@@ -27,8 +27,17 @@ let OrderController = class OrderController {
     payOrder(id, req) {
         return this.orderService.payOrder(id, req.user.id);
     }
-    getOrders(req) {
-        return this.orderService.getOrders(req.user.id);
+    getOrders(req, status, page = '1', limit = '20') {
+        return this.orderService.getOrders(req.user.id, status, +page, +limit);
+    }
+    getOrderDetail(id, req) {
+        return this.orderService.getOrderDetail(id, req.user.id);
+    }
+    cancelOrder(id, req) {
+        return this.orderService.cancelOrder(id, req.user.id);
+    }
+    confirmOrder(id, req) {
+        return this.orderService.confirmOrder(id, req.user.id);
     }
 };
 exports.OrderController = OrderController;
@@ -51,10 +60,37 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('page')),
+    __param(3, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, Object, Object]),
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "getOrders", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "getOrderDetail", null);
+__decorate([
+    (0, common_1.Put)(':id/cancel'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "cancelOrder", null);
+__decorate([
+    (0, common_1.Put)(':id/confirm'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "confirmOrder", null);
 exports.OrderController = OrderController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('orders'),

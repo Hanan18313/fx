@@ -8,7 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import api from '../../services/api';
-import { Colors, Spacing, BorderRadius, FontSize } from '../../constants/theme';
+import { Colors, Spacing, BorderRadius, FontSize, Fonts } from '../../constants/theme';
 
 interface Reward {
   type: 'referral' | 'commission';
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   headerCount: {
     color: Colors.primary,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     fontSize: FontSize.xl,
   },
   item: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: FontSize.xs,
-    fontWeight: '600',
+    fontFamily: Fonts.semibold,
   },
   fromText: {
     fontSize: FontSize.md,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: FontSize.xl,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     color: Colors.primary,
   },
   empty: {

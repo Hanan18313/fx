@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
-import { Colors, FontSize } from '../../constants/theme';
+import { Colors, FontSize, Fonts } from '../../constants/theme';
 
 export default function SplashScreen() {
   const navigation = useNavigation<any>();
@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
     color: Colors.textWhite,
   },
   appName: {
     fontSize: FontSize.xxl + 4,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
     color: Colors.textWhite,
     marginBottom: 8,
   },

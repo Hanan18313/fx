@@ -25,12 +25,25 @@ interface OrderItem {
 
 interface OrderDetail {
   id: number;
+  orderNo?: string;
   userId: number;
   userPhone: string;
   userNickname: string;
   totalAmount: number;
+  freightAmount?: number;
+  discountAmount?: number;
+  payAmount?: number;
   profitPool: number;
   status: string;
+  addressSnapshot?: {
+    name: string;
+    phone: string;
+    province: string;
+    city: string;
+    district: string;
+    detail: string;
+  };
+  remark?: string;
   paidAt: string | null;
   shippedAt: string | null;
   completedAt: string | null;
@@ -127,13 +140,30 @@ const OrderDetailPage: React.FC = () => {
       >
         {detail && (
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="订单ID">{detail.id}</Descriptions.Item>
+            <Descriptions.Item label="订单编号">{detail.orderNo ?? detail.id}</Descriptions.Item>
             <Descriptions.Item label="状态">
               <Tag color={s!.color}>{s!.label}</Tag>
             </Descriptions.Item>
             <Descriptions.Item label="用户手机">{detail.userPhone}</Descriptions.Item>
             <Descriptions.Item label="用户昵称">{detail.userNickname}</Descriptions.Item>
+            <Descriptions.Item label="收货人">
+              {detail.addressSnapshot?.name ?? '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="联系电话">
+              {detail.addressSnapshot?.phone ?? '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="收货地址" span={2}>
+              {detail.addressSnapshot
+                ? `${detail.addressSnapshot.province}${detail.addressSnapshot.city}${detail.addressSnapshot.district}${detail.addressSnapshot.detail}`
+                : '-'}
+            </Descriptions.Item>
             <Descriptions.Item label="总金额">¥{Number(detail.totalAmount).toFixed(2)}</Descriptions.Item>
+            <Descriptions.Item label="运费">
+              {detail.freightAmount != null ? `¥${Number(detail.freightAmount).toFixed(2)}` : '-'}
+            </Descriptions.Item>
+            <Descriptions.Item label="实付金额">
+              {detail.payAmount != null ? `¥${Number(detail.payAmount).toFixed(2)}` : '-'}
+            </Descriptions.Item>
             <Descriptions.Item label="利润池">¥{Number(detail.profitPool).toFixed(2)}</Descriptions.Item>
             <Descriptions.Item label="创建时间">{detail.createdAt}</Descriptions.Item>
             <Descriptions.Item label="支付时间">{detail.paidAt ?? '-'}</Descriptions.Item>

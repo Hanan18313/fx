@@ -15,6 +15,10 @@ const withdrawal_mgmt_module_1 = require("./withdrawal-mgmt/withdrawal-mgmt.modu
 const profit_mgmt_module_1 = require("./profit-mgmt/profit-mgmt.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
 const promotion_mgmt_module_1 = require("./promotion-mgmt/promotion-mgmt.module");
+const category_mgmt_module_1 = require("./category-mgmt/category-mgmt.module");
+const banner_mgmt_module_1 = require("./banner-mgmt/banner-mgmt.module");
+const review_mgmt_module_1 = require("./review-mgmt/review-mgmt.module");
+const notification_mgmt_module_1 = require("./notification-mgmt/notification-mgmt.module");
 let BizModule = class BizModule {
 };
 exports.BizModule = BizModule;
@@ -28,6 +32,10 @@ exports.BizModule = BizModule = __decorate([
             profit_mgmt_module_1.ProfitMgmtModule,
             dashboard_module_1.DashboardModule,
             promotion_mgmt_module_1.PromotionMgmtModule,
+            category_mgmt_module_1.CategoryMgmtModule,
+            banner_mgmt_module_1.BannerMgmtModule,
+            review_mgmt_module_1.ReviewMgmtModule,
+            notification_mgmt_module_1.NotificationMgmtModule,
         ],
     })
 ], BizModule);

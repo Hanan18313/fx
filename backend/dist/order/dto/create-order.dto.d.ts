@@ -4,4 +4,6 @@ export declare class OrderItemDto {
 }
 export declare class CreateOrderDto {
     items: OrderItemDto[];
+    address_id?: number;
+    remark?: string;
 }

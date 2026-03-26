@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Colors, BorderRadius, Spacing, FontSize } from '../../constants/theme';
+import { Colors, BorderRadius, Spacing, FontSize, Fonts } from '../../constants/theme';
 import type { ProductCardProps } from './types';
 
 const CARD_WIDTH =
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: Colors.textWhite,
     fontSize: FontSize.xs,
-    fontWeight: 'bold',
+    fontFamily: Fonts.bold,
   },
   info: {
     padding: Spacing.sm,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: FontSize.xl,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
     color: Colors.primary,
   },
   originalPrice: {
@@ -155,6 +155,6 @@ const styles = StyleSheet.create({
   },
   addBtnText: {
     color: Colors.textWhite,
-    fontWeight: 'bold',
+    fontFamily: Fonts.numBold,
   },
 });

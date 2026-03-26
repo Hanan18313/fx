@@ -1,0 +1,22 @@
+import { Repository } from 'typeorm';
+import { FavoriteEntity } from '../database/entities/favorite.entity';
+import { ProductEntity } from '../database/entities/product.entity';
+export declare class FavoriteService {
+    private readonly favoriteRepo;
+    private readonly productRepo;
+    constructor(favoriteRepo: Repository<FavoriteEntity>, productRepo: Repository<ProductEntity>);
+    list(userId: number): Promise<{
+        data: {
+            id: number;
+            product_id: number;
+            created_at: Date;
+            product: ProductEntity;
+        }[];
+    }>;
+    add(userId: number, productId: number): Promise<{
+        message: string;
+    }>;
+    remove(userId: number, productId: number): Promise<{
+        message: string;
+    }>;
+}

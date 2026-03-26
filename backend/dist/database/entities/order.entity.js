@@ -19,6 +19,10 @@ __decorate([
     __metadata("design:type", Number)
 ], OrderEntity.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'order_no', length: 32, nullable: true }),
+    __metadata("design:type", String)
+], OrderEntity.prototype, "orderNo", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'user_id', type: 'bigint' }),
     __metadata("design:type", Number)
 ], OrderEntity.prototype, "userId", void 0);
@@ -26,6 +30,18 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'total_amount', type: 'decimal', precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], OrderEntity.prototype, "totalAmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'freight_amount', type: 'decimal', precision: 10, scale: 2, default: 0 }),
+    __metadata("design:type", Number)
+], OrderEntity.prototype, "freightAmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'discount_amount', type: 'decimal', precision: 10, scale: 2, default: 0 }),
+    __metadata("design:type", Number)
+], OrderEntity.prototype, "discountAmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'pay_amount', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], OrderEntity.prototype, "payAmount", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'profit_pool', type: 'decimal', precision: 10, scale: 2 }),
     __metadata("design:type", Number)
@@ -47,9 +63,25 @@ __decorate([
     __metadata("design:type", String)
 ], OrderEntity.prototype, "remark", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'address_id', type: 'bigint', nullable: true }),
+    __metadata("design:type", Number)
+], OrderEntity.prototype, "addressId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'address_snapshot', type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], OrderEntity.prototype, "addressSnapshot", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'paid_at', type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], OrderEntity.prototype, "paidAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'shipped_at', type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], OrderEntity.prototype, "shippedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'completed_at', type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], OrderEntity.prototype, "completedAt", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
