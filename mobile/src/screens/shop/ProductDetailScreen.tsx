@@ -11,7 +11,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCartStore } from '../../store/cartStore';
@@ -69,7 +69,19 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* ===== Header ===== */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
+        </TouchableOpacity>
+        <Text style={styles.topTitle}>商品详情</Text>
+        <View style={styles.topBarPlaceholder} />
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -310,25 +322,6 @@ export default function ProductDetailScreen() {
         </View>{/* end paddedContent */}
       </ScrollView>
 
-      {/* ===== Floating Header (absolute, overlaid on image) ===== */}
-      <View
-        style={[styles.headerOverlay, { paddingTop: insets.top }]}
-        pointerEvents="box-none"
-      >
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <View style={styles.backButtonInner}>
-              <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.topTitle}>商品详情</Text>
-          <View style={styles.topBarPlaceholder} />
-        </View>
-      </View>
-
       {/* ===== Bottom Action Bar ===== */}
       <View
         style={[
@@ -354,7 +347,7 @@ export default function ProductDetailScreen() {
           <Text style={styles.buyText}>立即购买</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -364,47 +357,30 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  /* Floating Header */
-  headerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
+  /* Header — matches OrderListScreen style */
   topBar: {
+    height: 56,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: CONTENT_PADDING,
-    height: 48,
+    justifyContent: 'space-between',
+    backgroundColor: Colors.surface,
+    paddingHorizontal: CONTENT_PADDING + 4,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonInner: {
     width: 34,
     height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(255,255,255,0.88)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-    elevation: 3,
   },
   topTitle: {
-    fontSize: FontSize.lg,
+    fontSize: FontSize.xl,
     fontFamily: Fonts.bold,
     color: Colors.textPrimary,
   },
   topBarPlaceholder: {
-    width: 36,
+    width: 34,
   },
 
   /* Scroll */
