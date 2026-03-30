@@ -23,16 +23,7 @@ export default function PayResultScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backBtn}>← 返回</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>支付结果</Text>
-        <View style={{ width: 50 }} />
-      </View>
-
+    <SafeAreaView style={styles.container} edges={[]}>
       <View style={styles.content}>
         {/* Result Icon */}
         <View style={[styles.iconCircle, { backgroundColor: success ? '#E8F5E9' : '#FFEBEE' }]}>
@@ -82,26 +73,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-  },
-  backBtn: {
-    fontSize: FontSize.lg,
-    color: Colors.textSecondary,
-    width: 50,
-  },
-  headerTitle: {
-    fontSize: FontSize.xl,
-    fontFamily: Fonts.bold,
-    color: Colors.textPrimary,
   },
   content: {
     flex: 1,

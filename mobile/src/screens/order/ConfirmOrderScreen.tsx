@@ -92,15 +92,7 @@ export default function ConfirmOrderScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backBtn}>← 返回</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>确认订单</Text>
-        <View style={{ width: 50 }} />
-      </View>
+    <SafeAreaView style={styles.container} edges={[]}>
 
       <ScrollView
         style={styles.scrollView}
@@ -221,26 +213,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-  },
-  backBtn: {
-    fontSize: FontSize.lg,
-    color: Colors.textSecondary,
-    width: 50,
-  },
-  headerTitle: {
-    fontSize: FontSize.xl,
-    fontFamily: Fonts.bold,
-    color: Colors.textPrimary,
   },
   scrollView: {
     flex: 1,

@@ -161,23 +161,6 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.root} edges={['top']}>
       <StatusBar barStyle="dark-content" />
 
-      {/* ── Top App Bar ── */}
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          style={styles.topBarBtn}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Ionicons name="settings-outline" size={20} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.topBarTitle}>个人中心</Text>
-        <TouchableOpacity
-          style={styles.topBarBtn}
-          onPress={() => navigation.navigate('Notifications')}
-        >
-          <Ionicons name="notifications-outline" size={20} color={Colors.textPrimary} />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -190,6 +173,25 @@ export default function ProfileScreen() {
           />
         }
       >
+        {/* ── Page Header ── */}
+        <View style={styles.pageHeader}>
+          <Text style={styles.pageTitle}>个人中心</Text>
+          <View style={styles.pageHeaderActions}>
+            <TouchableOpacity
+              style={styles.headerActionBtn}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Ionicons name="notifications-outline" size={22} color={Colors.textPrimary} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.headerActionBtn}
+              onPress={() => navigation.navigate('Settings')}
+            >
+              <Ionicons name="settings-outline" size={22} color={Colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* ── Digital Membership Card ── */}
         <TouchableOpacity
           activeOpacity={0.9}
@@ -259,9 +261,9 @@ export default function ProfileScreen() {
               </View>
               <Text style={[styles.bentoLabel, { color: Colors.bodyGray }]}>可用余额</Text>
               {/* Trend sparkline placeholder */}
-              <View style={styles.sparklinePlaceholder}>
+              {/* <View style={styles.sparklinePlaceholder}>
                 <Ionicons name="trending-up" size={14} color="#22C55E" />
-              </View>
+              </View> */}
             </View>
             <View>
               <View style={styles.bentoAmountRow}>
@@ -285,9 +287,9 @@ export default function ProfileScreen() {
                 <Ionicons name="gift-outline" size={14} color={Colors.priceOrange} />
               </View>
               <Text style={[styles.bentoLabel, { color: Colors.priceOrange }]}>累计节省</Text>
-              <View style={styles.sparklinePlaceholder}>
+              {/* <View style={styles.sparklinePlaceholder}>
                 <Ionicons name="trending-up" size={14} color={Colors.priceOrange} />
-              </View>
+              </View> */}
             </View>
             <View>
               <View style={styles.bentoAmountRow}>
@@ -414,28 +416,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
 
-  /* Top Bar */
-  topBar: {
-    height: 56,
+  /* Page Header */
+  pageHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    marginBottom: Spacing.lg,
+  },
+  pageTitle: {
+    fontSize: 30,
+    fontFamily: Fonts.medium,
+    color: Colors.textPrimary,
+    letterSpacing: -0.75,
+    lineHeight: 36,
+  },
+  pageHeaderActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: CARD_PADDING,
-    backgroundColor: 'rgba(255,255,255,0.85)',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
+    gap: Spacing.xs,
+    paddingBottom: 2,
   },
-  topBarBtn: {
+  headerActionBtn: {
     width: 36,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  topBarTitle: {
-    fontSize: FontSize.xl,
-    fontFamily: Fonts.bold,
-    color: '#1E3A8A',
-    letterSpacing: -0.45,
   },
 
   scrollContent: {

@@ -69,18 +69,7 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* ===== Header ===== */}
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.topTitle}>商品详情</Text>
-        <View style={styles.topBarPlaceholder} />
-      </View>
+    <SafeAreaView style={styles.container} edges={[]}>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -355,32 +344,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-
-  /* Header — matches OrderListScreen style */
-  topBar: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.surface,
-    paddingHorizontal: CONTENT_PADDING + 4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
-  },
-  backButton: {
-    width: 34,
-    height: 34,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topTitle: {
-    fontSize: FontSize.xl,
-    fontFamily: Fonts.bold,
-    color: Colors.textPrimary,
-  },
-  topBarPlaceholder: {
-    width: 34,
   },
 
   /* Scroll */

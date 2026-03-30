@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import {
   View,
   Text,
@@ -170,10 +171,10 @@ export default function SearchScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backBtn}>←</Text>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={22} color={Colors.navyButton} />
         </TouchableOpacity>
         <View style={styles.searchBox}>
           <Text style={styles.searchIcon}>🔍</Text>
@@ -244,12 +245,18 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: '#F9F9F9',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    ...Shadow.sm,
   },
-  backBtn: { fontSize: 22, color: Colors.textSecondary, paddingRight: Spacing.sm },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.sm,
+  },
   searchBox: {
     flex: 1,
     flexDirection: 'row',

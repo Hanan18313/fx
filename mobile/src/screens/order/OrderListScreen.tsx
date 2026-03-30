@@ -297,19 +297,7 @@ export default function OrderListScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      {/* ── Top App Bar ── */}
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.topBarTitle}>我的订单</Text>
-        <View style={styles.topBarRight} />
-      </View>
+    <SafeAreaView style={styles.root} edges={[]}>
 
       <FlatList
         data={orders}
@@ -387,31 +375,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: '#F9F9F9',
-  },
-
-  /* Top Bar */
-  topBar: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F9F9F9',
-    paddingHorizontal: CONTENT_H + 4,
-  },
-  backBtn: {
-    width: 34,
-    height: 34,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topBarTitle: {
-    fontSize: FontSize.xl,
-    fontFamily: Fonts.bold,
-    color: Colors.navyButton,
-    letterSpacing: -0.9,
-  },
-  topBarRight: {
-    width: 34,
   },
 
   /* List */
