@@ -43,6 +43,14 @@ __decorate([
     __metadata("design:type", String)
 ], UserEntity.prototype, "inviteCode", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'member_no', length: 20, nullable: true }),
+    __metadata("design:type", String)
+], UserEntity.prototype, "memberNo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'member_expire', type: 'date', nullable: true }),
+    __metadata("design:type", String)
+], UserEntity.prototype, "memberExpire", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'parent_id', type: 'bigint', nullable: true }),
     __metadata("design:type", Number)
 ], UserEntity.prototype, "parentId", void 0);

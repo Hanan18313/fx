@@ -7,10 +7,15 @@ export declare class WalletController {
         frozen: number;
         totalEarn: number;
     }>;
-    withdraw(req: any, amount: number): Promise<{
+    withdraw(req: any, amount: number, method: string): Promise<{
         message: string;
     }>;
-    getTransactions(req: any): Promise<{
-        data: any[];
+    getBankCards(req: any): Promise<{
+        data: import("../database/entities/bank-card.entity").BankCardEntity[];
+    }>;
+    getDefaultBankCard(req: any): Promise<import("../database/entities/bank-card.entity").BankCardEntity>;
+    getTransactions(req: any, page?: number, limit?: number): Promise<{
+        data: import("../database/entities/wallet-transaction.entity").WalletTransactionEntity[];
+        total: number;
     }>;
 }

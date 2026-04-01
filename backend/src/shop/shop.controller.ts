@@ -10,8 +10,9 @@ export class ShopController {
     @Query('page') page = '1',
     @Query('limit') limit = '20',
     @Query('keyword') keyword = '',
+    @Query('categoryId') categoryId?: string,
   ) {
-    return this.shopService.getProducts(+page, +limit, keyword);
+    return this.shopService.getProducts(+page, +limit, keyword, categoryId ? +categoryId : undefined);
   }
 
   @Get(':id')

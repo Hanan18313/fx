@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import { BorderRadius, Colors, FontSize, Fonts, Shadow, Spacing } from '../../constants/theme';
@@ -20,25 +20,33 @@ interface Wallet {
   total_earn: number;
 }
 
+interface BankCard {
+  id: number;
+  bankName: string;
+  lastFour: string;
+  realName: string;
+  isDefault: number;
+}
+
+interface Transaction {
+  id: number;
+  type: 'income' | 'expense';
+  amount: number;
+  name: string;
+  createdAt: string;
+}
+
 const QUICK_ACTIONS = [
   { icon: 'arrow-up-circle-outline' as const, label: '提现' },
   { icon: 'time-outline' as const, label: '明细' },
   { icon: 'help-circle-outline' as const, label: '帮助' },
 ] as const;
 
-const MOCK_BANK_CARDS = [
-  { id: '1', bankName: '招商银行', cardNo: '尾号 1234', icon: 'card-outline' as const },
-  { id: '2', bankName: '中国工商银行', cardNo: '尾号 5678', icon: 'card-outline' as const },
-];
-
-const MOCK_TRANSACTIONS = [
-  { id: '1', name: '在线购物退款', date: '今天 14:32', amount: '+¥128.00', iconBg: '#C8D7FE', iconColor: Colors.navyButton },
-  { id: '2', name: '提现到账', date: '昨天 09:15', amount: '-¥500.00', iconBg: '#E8E8E8', iconColor: Colors.bodyGray },
-];
-
 export default function WalletScreen() {
   const navigation = useNavigation<any>();
   const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [bankCards, setBankCards] = useState<BankCard[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [balanceVisible, setBalanceVisible] = useState(true);
@@ -60,8 +68,14 @@ export default function WalletScreen() {
 
   const fetchWallet = useCallback(async () => {
     try {
-      const res = await api.get('/wallet');
-      setWallet(res.data.data);
+      const [walletRes, cardsRes, txRes] = await Promise.all([
+        api.get('/wallet'),
+        api.get('/wallet/bank-cards'),
+        api.get('/wallet/transactions', { params: { page: 1, limit: 5 } }),
+      ]);
+      setWallet(walletRes.data.data ?? walletRes.data);
+      setBankCards(cardsRes.data.data ?? []);
+      setTransactions(txRes.data.data ?? []);
     } catch {
       /* ignore */
     } finally {
@@ -190,16 +204,16 @@ export default function WalletScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.card}>
-          {MOCK_BANK_CARDS.map((bc, i) => (
+          {bankCards.map((bc, i) => (
             <React.Fragment key={bc.id}>
               {i > 0 && <View style={styles.cardDivider} />}
               <TouchableOpacity style={styles.bankCardRow}>
                 <View style={styles.bankIconWrap}>
-                  <Ionicons name={bc.icon} size={22} color={Colors.bodyGray} />
+                  <Ionicons name="card-outline" size={22} color={Colors.bodyGray} />
                 </View>
                 <View style={styles.bankInfo}>
                   <Text style={styles.bankName}>{bc.bankName}</Text>
-                  <Text style={styles.bankCardNo}>{bc.cardNo}</Text>
+                  <Text style={styles.bankCardNo}>尾号 {bc.lastFour}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={Colors.bodyGray} />
               </TouchableOpacity>
@@ -221,28 +235,28 @@ export default function WalletScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.card}>
-          {MOCK_TRANSACTIONS.map((tx, i) => (
+          {transactions.map((tx, i) => (
             <React.Fragment key={tx.id}>
               {i > 0 && <View style={styles.cardDivider} />}
               <View style={styles.txRow}>
-                <View style={[styles.txIconWrap, { backgroundColor: tx.iconBg }]}>
-                  <Ionicons name="receipt-outline" size={18} color={tx.iconColor} />
+                <View style={[styles.txIconWrap, { backgroundColor: tx.type === 'income' ? '#C8D7FE' : '#E8E8E8' }]}>
+                  <Ionicons name="receipt-outline" size={18} color={tx.type === 'income' ? Colors.navyButton : Colors.bodyGray} />
                 </View>
                 <View style={styles.txInfo}>
                   <Text style={styles.txName}>{tx.name}</Text>
-                  <Text style={styles.txDate}>{tx.date}</Text>
+                  <Text style={styles.txDate}>{new Date(tx.createdAt).toLocaleDateString('zh-CN')}</Text>
                 </View>
-                <Text
-                  style={[
-                    styles.txAmount,
-                    tx.amount.startsWith('+') ? styles.txAmountIn : styles.txAmountOut,
-                  ]}
-                >
-                  {tx.amount}
+                <Text style={[styles.txAmount, tx.type === 'income' ? styles.txAmountIn : styles.txAmountOut]}>
+                  {tx.type === 'income' ? '+' : '-'}¥{Number(tx.amount).toFixed(2)}
                 </Text>
               </View>
             </React.Fragment>
           ))}
+          {transactions.length === 0 && (
+            <View style={{ padding: Spacing.lg, alignItems: 'center' }}>
+              <Text style={{ color: Colors.bodyGray, fontSize: FontSize.sm }}>暂无账单记录</Text>
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>

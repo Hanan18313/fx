@@ -58,7 +58,7 @@ let UserService = class UserService {
     async getProfile(userId) {
         const user = await this.userRepo.findOne({
             where: { id: userId },
-            select: ['id', 'phone', 'nickname', 'avatar', 'role', 'inviteCode', 'createdAt'],
+            select: ['id', 'phone', 'nickname', 'avatar', 'role', 'inviteCode', 'memberNo', 'memberExpire', 'createdAt'],
         });
         if (!user)
             throw new common_1.NotFoundException('用户不存在');
@@ -69,8 +69,10 @@ let UserService = class UserService {
             nickname: user.nickname,
             avatar: user.avatar,
             role: user.role,
+            memberNo: user.memberNo,
+            memberExpire: user.memberExpire,
             invite_code: user.inviteCode,
-            created_at: user.createdAt,
+            createdAt: user.createdAt,
         };
     }
     async updateProfile(userId, dto) {

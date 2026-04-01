@@ -16,9 +16,11 @@ export declare class PromotionService {
         referral_total: number;
         commission_total: number;
         total_reward: number;
+        monthly_estimate: number;
+        yesterday_earning: number;
     }>;
     getInvitees(userId: number, page?: number, limit?: number): Promise<{
-        data: UserEntity[];
+        data: any;
         total: number;
         page: number;
     }>;

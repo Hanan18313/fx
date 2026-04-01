@@ -6,6 +6,8 @@ export declare class UserEntity {
     avatar: string;
     role: string;
     inviteCode: string;
+    memberNo: string;
+    memberExpire: string;
     parentId: number;
     status: number;
     createdAt: Date;

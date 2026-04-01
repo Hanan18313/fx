@@ -11,8 +11,10 @@ export declare class UserService {
         nickname: string;
         avatar: string;
         role: string;
+        memberNo: string;
+        memberExpire: string;
         invite_code: string;
-        created_at: Date;
+        createdAt: Date;
     }>;
     updateProfile(userId: number, dto: UpdateProfileDto): Promise<{
         message: string;

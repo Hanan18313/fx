@@ -190,7 +190,7 @@ export default function ProductDetailScreen() {
                   {product.sales ? `${product.sales}+` : '1.2k+'} 条真实评价
                 </Text>
               </View>
-              <TouchableOpacity style={styles.reviewLink}>
+              <TouchableOpacity style={styles.reviewLink} onPress={() => navigation.navigate('ReviewList', { productId: product.id })}>
                 <Text style={styles.reviewLinkText}>查看评价</Text>
                 <Ionicons
                   name="chevron-forward"

@@ -16,7 +16,6 @@ import {
   mockBanners,
   mockQuickCategories,
   mockProducts,
-  mockFlashSaleProducts,
 } from '../../constants/mockData';
 import SearchBar from '../../components/common/SearchBar';
 import BannerCarousel from '../../components/shop/BannerCarousel';
@@ -27,6 +26,7 @@ import LargeRecommendCard from '../../components/shop/LargeRecommendCard';
 import type { Product } from '../../types/product';
 import type { Banner } from '../../types/banner';
 import type { QuickCategory } from '../../types/category';
+import type { FlashSaleProduct } from '../../constants/mockData';
 
 export default function ShopHomeScreen() {
   const navigation = useNavigation<any>();
@@ -35,6 +35,7 @@ export default function ShopHomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<Banner[]>(mockBanners);
   const [quickCategories, setQuickCategories] = useState<QuickCategory[]>(mockQuickCategories);
+  const [flashSaleProducts, setFlashSaleProducts] = useState<FlashSaleProduct[]>([]);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -74,7 +75,29 @@ export default function ShopHomeScreen() {
     fetchProducts(1, true);
     fetchBanners();
     fetchQuickCategories();
+    fetchFlashSale();
   }, []);
+
+  const fetchFlashSale = async () => {
+    try {
+      const { data } = await api.get('/products/flash-sale');
+      const list = data.data ?? data;
+      if (Array.isArray(list) && list.length > 0) {
+        setFlashSaleProducts(list.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          imageUrl: Array.isArray(p.images) ? p.images[0] : '',
+          originalPrice: String(p.originalPrice ?? p.price),
+          salePrice: String(p.flashPrice ?? p.price),
+          discount: p.flashPrice && p.price
+            ? `${Math.round((1 - p.flashPrice / p.price) * 10)}折`
+            : '',
+        })));
+      }
+    } catch {
+      /* keep empty */
+    }
+  };
 
   const fetchBanners = async () => {
     try {
@@ -134,7 +157,7 @@ export default function ShopHomeScreen() {
 
       <QuickCategoryGrid categories={quickCategories} onPress={handleCategoryPress} />
 
-      <FlashSalesSection products={mockFlashSaleProducts} />
+      <FlashSalesSection products={flashSaleProducts} />
 
       <SectionHeader title="为您推荐" variant="large" />
     </>

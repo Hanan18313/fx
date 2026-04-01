@@ -4,10 +4,12 @@ export declare class FavoriteController {
     constructor(favoriteService: FavoriteService);
     list(req: any): Promise<{
         data: {
-            id: number;
-            product_id: number;
-            created_at: Date;
-            product: import("../database/entities/product.entity").ProductEntity;
+            productId: number;
+            name: string;
+            price: number;
+            originalPrice: number;
+            images: string[];
+            tag: string;
         }[];
     }>;
     add(req: any, productId: number): Promise<{

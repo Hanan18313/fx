@@ -27,6 +27,14 @@ __decorate([
     __metadata("design:type", Number)
 ], WithdrawalEntity.prototype, "amount", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ['bank', 'alipay'], default: 'bank' }),
+    __metadata("design:type", String)
+], WithdrawalEntity.prototype, "method", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'bank_card_id', type: 'bigint', nullable: true }),
+    __metadata("design:type", Number)
+], WithdrawalEntity.prototype, "bankCardId", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'bank_name', length: 50, nullable: true }),
     __metadata("design:type", String)
 ], WithdrawalEntity.prototype, "bankName", void 0);

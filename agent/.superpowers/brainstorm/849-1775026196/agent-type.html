@@ -1,0 +1,37 @@
+<h2>这个助手以哪种形式挂载在网站上？</h2>
+<p class="subtitle">hr.bjx.com.cn 是北极星人才网，你希望助手如何与它结合？</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>浏览器扩展（Extension）</h3>
+      <p>以 Chrome/Edge 插件形式运行，在用户浏览该网站时注入悬浮助手 UI，无需网站方配合</p>
+      <p style="margin-top:8px;font-size:12px;color:#888">适合：个人/团队内部使用，不需要改动网站源码</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>油猴脚本（Userscript）</h3>
+      <p>通过 Tampermonkey/Violentmonkey 注入，在打开该网站时自动运行，添加浮动对话框</p>
+      <p style="margin-top:8px;font-size:12px;color:#888">适合：轻量快速，安装简单，适合个人使用</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>独立网页小工具</h3>
+      <p>单独部署一个助手页面，用户打开该页面，粘贴 JD/职位信息，助手协助处理</p>
+      <p style="margin-top:8px;font-size:12px;color:#888">适合：需要更复杂功能，有服务器支持</p>
+    </div>
+  </div>
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>自动化爬取 + 分析 Agent</h3>
+      <p>后台脚本定时抓取网站职位信息，用 AI 分析并推送结果（无前端 UI）</p>
+      <p style="margin-top:8px;font-size:12px;color:#888">适合：批量监控职位、自动筛选</p>
+    </div>
+  </div>
+</div>

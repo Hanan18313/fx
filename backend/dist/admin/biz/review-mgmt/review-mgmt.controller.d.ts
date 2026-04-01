@@ -15,6 +15,10 @@ export declare class ReviewMgmtController {
             content: string;
             images: string[];
             isAnonymous: number;
+            hasFollowup: number;
+            followupContent: string;
+            followupImages: string[];
+            followupAt: Date;
             createdAt: Date;
         }[];
         total: number;

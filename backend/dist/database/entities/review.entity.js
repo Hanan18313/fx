@@ -47,6 +47,22 @@ __decorate([
     __metadata("design:type", Number)
 ], ReviewEntity.prototype, "isAnonymous", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'has_followup', default: 0 }),
+    __metadata("design:type", Number)
+], ReviewEntity.prototype, "hasFollowup", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'followup_content', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], ReviewEntity.prototype, "followupContent", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'followup_images', type: 'json', nullable: true }),
+    __metadata("design:type", Array)
+], ReviewEntity.prototype, "followupImages", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'followup_at', type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], ReviewEntity.prototype, "followupAt", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
 ], ReviewEntity.prototype, "createdAt", void 0);

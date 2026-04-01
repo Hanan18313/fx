@@ -26,6 +26,18 @@ export class ReviewEntity {
   @Column({ name: 'is_anonymous', default: 0 })
   isAnonymous: number;
 
+  @Column({ name: 'has_followup', default: 0 })
+  hasFollowup: number;
+
+  @Column({ name: 'followup_content', type: 'text', nullable: true })
+  followupContent: string;
+
+  @Column({ name: 'followup_images', type: 'json', nullable: true })
+  followupImages: string[];
+
+  @Column({ name: 'followup_at', type: 'timestamp', nullable: true })
+  followupAt: Date;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

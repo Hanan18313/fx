@@ -16,17 +16,37 @@ export declare class OrderService {
     private readonly promotionService;
     constructor(orderRepo: Repository<OrderEntity>, orderItemRepo: Repository<OrderItemEntity>, productRepo: Repository<ProductEntity>, userRepo: Repository<UserEntity>, addressRepo: Repository<AddressEntity>, dataSource: DataSource, promotionService: PromotionService);
     createOrder(userId: number, dto: CreateOrderDto): Promise<{
-        order_id: number;
-        order_no: string;
-        total_amount: number;
-        pay_amount: number;
-        profit_pool: number;
+        id: number;
+        payAmount: number;
+        totalAmount: number;
     }>;
     payOrder(orderId: number, userId: number): Promise<{
-        message: string;
+        payAmount: number;
+        totalAmount: number;
     }>;
     getOrders(userId: number, status?: string, page?: number, limit?: number): Promise<{
-        data: OrderEntity[];
+        data: {
+            items: OrderItemEntity[];
+            id: number;
+            orderNo: string;
+            userId: number;
+            totalAmount: number;
+            freightAmount: number;
+            discountAmount: number;
+            payAmount: number;
+            profitPool: number;
+            status: string;
+            payType: string;
+            payTradeNo: string;
+            remark: string;
+            addressId: number;
+            addressSnapshot: any;
+            paidAt: Date;
+            shippedAt: Date;
+            completedAt: Date;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
         total: number;
         page: number;
     }>;

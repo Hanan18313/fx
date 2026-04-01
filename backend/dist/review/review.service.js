@@ -20,10 +20,11 @@ const review_entity_1 = require("../database/entities/review.entity");
 const order_entity_1 = require("../database/entities/order.entity");
 const user_entity_1 = require("../database/entities/user.entity");
 let ReviewService = class ReviewService {
-    constructor(reviewRepo, orderRepo, userRepo) {
+    constructor(reviewRepo, orderRepo, userRepo, dataSource) {
         this.reviewRepo = reviewRepo;
         this.orderRepo = orderRepo;
         this.userRepo = userRepo;
+        this.dataSource = dataSource;
     }
     async create(userId, dto) {
         const order = await this.orderRepo.findOne({
@@ -45,20 +46,48 @@ let ReviewService = class ReviewService {
             rating: dto.rating ?? 5,
             content: dto.content,
             images: dto.images,
-            isAnonymous: dto.is_anonymous ?? 0,
+            isAnonymous: dto.anonymous ? 1 : 0,
         });
-        const saved = await this.reviewRepo.save(review);
-        return saved;
+        await this.reviewRepo.save(review);
+        return {};
     }
-    async getProductReviews(productId, page = 1, limit = 20) {
-        const [reviews, total] = await this.reviewRepo.findAndCount({
-            where: { productId },
-            order: { id: 'DESC' },
-            skip: (page - 1) * limit,
-            take: limit,
-        });
+    async getStats(productId) {
+        const sql = `SELECT
+         COALESCE(AVG(rating), 0)                                              AS avgRating,
+         COUNT(*)                                                               AS total,
+         SUM(CASE WHEN images IS NOT NULL AND images != '[]' THEN 1 ELSE 0 END) AS withImage,
+         SUM(CASE WHEN rating >= 4 THEN 1 ELSE 0 END)                          AS positive,
+         SUM(has_followup)                                                      AS withFollowup
+       FROM reviews
+       ${productId ? 'WHERE product_id = ?' : ''}`;
+        const params = productId ? [productId] : [];
+        const [row] = await this.dataSource.query(sql, params);
+        return {
+            avgRating: Number(Number(row.avgRating).toFixed(1)),
+            total: Number(row.total),
+            withImage: Number(row.withImage),
+            positive: Number(row.positive),
+            withFollowup: Number(row.withFollowup),
+        };
+    }
+    async getReviews(params) {
+        const { page, limit, productId, hasImage, minRating, hasFollowup } = params;
+        const qb = this.reviewRepo
+            .createQueryBuilder('r')
+            .orderBy('r.id', 'DESC')
+            .skip((page - 1) * limit)
+            .take(limit);
+        if (productId)
+            qb.andWhere('r.product_id = :productId', { productId });
+        if (hasImage)
+            qb.andWhere("r.images IS NOT NULL AND r.images != '[]'");
+        if (minRating)
+            qb.andWhere('r.rating >= :minRating', { minRating });
+        if (hasFollowup)
+            qb.andWhere('r.has_followup = 1');
+        const [reviews, total] = await qb.getManyAndCount();
         if (reviews.length === 0)
-            return { data: [], total, page };
+            return { data: [], total };
         const userIds = [...new Set(reviews.map((r) => r.userId))];
         const users = await this.userRepo
             .createQueryBuilder('u')
@@ -81,10 +110,13 @@ let ReviewService = class ReviewService {
                 images: r.images,
                 nickname,
                 avatar,
-                created_at: r.createdAt,
+                hasFollowup: r.hasFollowup,
+                followupContent: r.followupContent,
+                followupAt: r.followupAt,
+                createdAt: r.createdAt,
             };
         });
-        return { data, total, page };
+        return { data, total };
     }
 };
 exports.ReviewService = ReviewService;
@@ -95,6 +127,7 @@ exports.ReviewService = ReviewService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.DataSource])
 ], ReviewService);
 //# sourceMappingURL=review.service.js.map

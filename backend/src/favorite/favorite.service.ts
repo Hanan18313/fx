@@ -26,7 +26,7 @@ export class FavoriteService {
       .createQueryBuilder('p')
       .where('p.id IN (:...ids)', { ids: productIds })
       .andWhere('p.status = :status', { status: 'on' })
-      .select(['p.id', 'p.name', 'p.price', 'p.images', 'p.profitRate'])
+      .select(['p.id', 'p.name', 'p.price', 'p.originalPrice', 'p.images', 'p.tag'])
       .getMany();
 
     const productMap = new Map(products.map((p) => [p.id, p]));
@@ -34,7 +34,14 @@ export class FavoriteService {
       .map((f) => {
         const product = productMap.get(f.productId);
         if (!product) return null;
-        return { id: f.id, product_id: f.productId, created_at: f.createdAt, product };
+        return {
+          productId: f.productId,
+          name: product.name,
+          price: product.price,
+          originalPrice: product.originalPrice,
+          images: product.images,
+          tag: product.tag,
+        };
       })
       .filter(Boolean);
 

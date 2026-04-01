@@ -1,0 +1,135 @@
+<h2>助手 UI 线框图</h2>
+<p class="subtitle">两个核心视图，点击选择你更喜欢的布局风格</p>
+
+<div class="split">
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;padding:0;overflow:hidden">
+    <div style="background:#1a73e8;color:#fff;padding:10px 16px;font-weight:600;font-size:13px">A — 侧边栏嵌入式</div>
+    <div style="padding:12px;background:#f8f9fa">
+
+      <!-- 模拟网站页面 + 侧边栏 -->
+      <div style="display:flex;gap:8px;height:420px">
+
+        <!-- 网站主体 -->
+        <div style="flex:1;background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;font-size:11px;color:#666;overflow:hidden">
+          <div style="background:#003087;color:#fff;padding:6px 8px;border-radius:4px;margin-bottom:8px;font-size:11px">北极星人才网 hr.bjx.com.cn</div>
+          <div style="background:#eee;height:20px;border-radius:3px;margin-bottom:6px"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:4px;width:80%"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:4px;width:60%"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:12px;width:70%"></div>
+          <div style="display:flex;gap:6px">
+            <div style="flex:1;background:#f0f4ff;border:1px solid #c5d5ff;border-radius:4px;padding:6px;font-size:10px">
+              <div style="font-weight:600;color:#333;margin-bottom:3px">光伏工程师</div>
+              <div style="color:#e53935">10-15K</div>
+              <div style="color:#666;font-size:9px">北京 · 5年</div>
+            </div>
+            <div style="flex:1;background:#f0f4ff;border:1px solid #c5d5ff;border-radius:4px;padding:6px;font-size:10px">
+              <div style="font-weight:600;color:#333;margin-bottom:3px">电气工程师</div>
+              <div style="color:#e53935">12-18K</div>
+              <div style="color:#666;font-size:9px">上海 · 3年</div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:60px;color:#bbb;font-size:10px">网站正文内容...</div>
+        </div>
+
+        <!-- 侧边栏助手 -->
+        <div style="width:220px;background:#fff;border:1px solid #ddd;border-radius:6px;display:flex;flex-direction:column;overflow:hidden">
+          <div style="background:#1a73e8;color:#fff;padding:8px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px">
+            <span>🤖</span> 求职小助手
+          </div>
+          <!-- 对话区 -->
+          <div style="flex:1;padding:8px;overflow:auto;background:#f8f9fa;font-size:10px">
+            <div style="background:#fff;border-radius:8px;padding:6px 8px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+              👋 你好！告诉我你想找什么职位？
+            </div>
+            <div style="background:#e3f2fd;border-radius:8px;padding:6px 8px;margin-bottom:6px;margin-left:20px">
+              光伏工程师，15k+，北京
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:6px 8px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+              为你找到 6 个职位 👇
+            </div>
+            <!-- 职位卡片 -->
+            <div style="margin-top:6px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px;cursor:pointer">
+              <div style="font-weight:600;color:#1a73e8;font-size:10px">光伏电站运维工程师</div>
+              <div style="color:#e53935;font-size:9px">15-20K</div>
+              <div style="color:#888;font-size:9px">华能集团 · 北京</div>
+            </div>
+            <div style="margin-top:4px;background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px;cursor:pointer">
+              <div style="font-weight:600;color:#1a73e8;font-size:10px">光伏项目工程师</div>
+              <div style="color:#e53935;font-size:9px">16-22K</div>
+              <div style="color:#888;font-size:9px">协鑫能源 · 北京</div>
+            </div>
+          </div>
+          <!-- 输入框 -->
+          <div style="padding:6px;border-top:1px solid #eee;display:flex;gap:4px">
+            <div style="flex:1;background:#f5f5f5;border-radius:12px;padding:5px 8px;font-size:10px;color:#aaa">输入你的需求...</div>
+            <div style="background:#1a73e8;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="cursor:pointer;padding:0;overflow:hidden">
+    <div style="background:#6200ea;color:#fff;padding:10px 16px;font-weight:600;font-size:13px">B — 悬浮气泡 + 弹窗</div>
+    <div style="padding:12px;background:#f8f9fa">
+
+      <div style="position:relative;height:420px">
+        <!-- 模拟网站页面 -->
+        <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;font-size:11px;color:#666;height:100%;box-sizing:border-box">
+          <div style="background:#003087;color:#fff;padding:6px 8px;border-radius:4px;margin-bottom:8px;font-size:11px">北极星人才网 hr.bjx.com.cn</div>
+          <div style="background:#eee;height:20px;border-radius:3px;margin-bottom:6px"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:4px;width:80%"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:4px;width:60%"></div>
+          <div style="background:#eee;height:12px;border-radius:3px;margin-bottom:12px;width:70%"></div>
+          <div style="display:flex;gap:6px">
+            <div style="flex:1;background:#f0f4ff;border:1px solid #c5d5ff;border-radius:4px;padding:6px;font-size:10px">
+              <div style="font-weight:600;color:#333;margin-bottom:3px">光伏工程师</div>
+              <div style="color:#e53935">10-15K</div>
+            </div>
+            <div style="flex:1;background:#f0f4ff;border:1px solid #c5d5ff;border-radius:4px;padding:6px;font-size:10px">
+              <div style="font-weight:600;color:#333;margin-bottom:3px">电气工程师</div>
+              <div style="color:#e53935">12-18K</div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:30px;color:#bbb;font-size:10px">网站正文内容...</div>
+        </div>
+
+        <!-- 弹窗 -->
+        <div style="position:absolute;bottom:50px;right:10px;width:240px;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);overflow:hidden">
+          <div style="background:#6200ea;color:#fff;padding:8px 12px;font-size:11px;font-weight:600;display:flex;justify-content:space-between">
+            <span>🤖 求职小助手</span>
+            <span style="opacity:.7;cursor:pointer">✕</span>
+          </div>
+          <div style="padding:8px;background:#f8f9fa;font-size:10px;max-height:200px;overflow:auto">
+            <div style="background:#fff;border-radius:8px;padding:6px 8px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+              👋 你好！告诉我你想找什么职位？
+            </div>
+            <div style="background:#ede7f6;border-radius:8px;padding:6px 8px;margin-bottom:6px;margin-left:20px">
+              光伏工程师，15k+，北京
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:6px 8px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+              为你找到 6 个职位 👇
+            </div>
+            <div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px;cursor:pointer;margin-bottom:4px">
+              <div style="font-weight:600;color:#6200ea;font-size:10px">光伏电站运维工程师</div>
+              <div style="color:#e53935;font-size:9px">15-20K · 华能集团 · 北京</div>
+            </div>
+            <div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px;cursor:pointer">
+              <div style="font-weight:600;color:#6200ea;font-size:10px">光伏项目工程师</div>
+              <div style="color:#e53935;font-size:9px">16-22K · 协鑫能源 · 北京</div>
+            </div>
+          </div>
+          <div style="padding:6px;border-top:1px solid #eee;display:flex;gap:4px">
+            <div style="flex:1;background:#f5f5f5;border-radius:12px;padding:5px 8px;font-size:10px;color:#aaa">输入你的需求...</div>
+            <div style="background:#6200ea;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px">↑</div>
+          </div>
+        </div>
+
+        <!-- 悬浮按钮 -->
+        <div style="position:absolute;bottom:10px;right:10px;width:40px;height:40px;background:#6200ea;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">🤖</div>
+      </div>
+    </div>
+  </div>
+</div>

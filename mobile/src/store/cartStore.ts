@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import api from '../services/api';
 import type { CartItem } from '../types/cart';
 import type { Product } from '../types/product';
 
@@ -16,29 +17,45 @@ interface CartState {
   selectedCount: () => number;
   clearCart: () => void;
   clearSelected: () => void;
+  loadFromServer: (serverItems: any[]) => void;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
 
+  loadFromServer: (serverItems) => {
+    set({
+      items: serverItems.map((item) => ({
+        id: item.id,
+        product: item.product,
+        quantity: item.quantity,
+        selected: item.selected === 1 || item.selected === true,
+        spec: item.spec,
+      })),
+    });
+  },
+
   addItem: (product, quantity = 1, spec) => {
     const { items } = get();
-    const existing = items.find((i) => i.product.id === product.id);
+    const existing = items.find((i) => i.product.id === product.id && i.spec === spec);
     if (existing) {
       set({
         items: items.map((i) =>
-          i.product.id === product.id
-            ? { ...i, quantity: i.quantity + quantity }
-            : i
+          i.id === existing.id ? { ...i, quantity: i.quantity + quantity } : i,
         ),
       });
     } else {
-      set({
-        items: [
-          ...items,
-          { id: Date.now(), product, quantity, selected: true, spec },
-        ],
-      });
+      const tempId = Date.now();
+      set({ items: [...items, { id: tempId, product, quantity, selected: true, spec }] });
+      // Sync to server; replace tempId with real server id on success
+      api.post('/cart', { productId: product.id, quantity, spec }).then((res) => {
+        const serverId = res.data?.id ?? res.data?.data?.id;
+        if (serverId) {
+          set((state) => ({
+            items: state.items.map((i) => (i.id === tempId ? { ...i, id: serverId } : i)),
+          }));
+        }
+      }).catch(() => { /* optimistic update stays */ });
     }
   },
 
@@ -58,17 +75,13 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   toggleSelect: (id) => {
     set({
-      items: get().items.map((i) =>
-        i.id === id ? { ...i, selected: !i.selected } : i
-      ),
+      items: get().items.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)),
     });
   },
 
   toggleSelectAll: () => {
     const allSelected = get().isAllSelected();
-    set({
-      items: get().items.map((i) => ({ ...i, selected: !allSelected })),
-    });
+    set({ items: get().items.map((i) => ({ ...i, selected: !allSelected })) });
   },
 
   isAllSelected: () => {

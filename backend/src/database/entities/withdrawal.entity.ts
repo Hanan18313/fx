@@ -11,6 +11,12 @@ export class WithdrawalEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
+  @Column({ type: 'enum', enum: ['bank', 'alipay'], default: 'bank' })
+  method: string;
+
+  @Column({ name: 'bank_card_id', type: 'bigint', nullable: true })
+  bankCardId: number;
+
   @Column({ name: 'bank_name', length: 50, nullable: true })
   bankName: string;
 

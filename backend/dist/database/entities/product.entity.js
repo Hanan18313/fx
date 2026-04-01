@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "price", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'original_price', type: 'decimal', precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], ProductEntity.prototype, "originalPrice", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'profit_rate', type: 'decimal', precision: 5, scale: 4, default: 0.25 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "profitRate", void 0);
@@ -39,6 +43,14 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "stock", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], ProductEntity.prototype, "sales", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ['promotion', 'new', 'hot', 'member_exclusive'], nullable: true }),
+    __metadata("design:type", String)
+], ProductEntity.prototype, "tag", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'json', nullable: true }),
     __metadata("design:type", Array)
 ], ProductEntity.prototype, "images", void 0);
@@ -46,6 +58,10 @@ __decorate([
     (0, typeorm_1.Column)({ length: 50, nullable: true }),
     __metadata("design:type", String)
 ], ProductEntity.prototype, "category", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'category_id', type: 'bigint', nullable: true }),
+    __metadata("design:type", Number)
+], ProductEntity.prototype, "categoryId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: ['on', 'off'], default: 'on' }),
     __metadata("design:type", String)

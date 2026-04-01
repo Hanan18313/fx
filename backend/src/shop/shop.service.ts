@@ -10,11 +10,12 @@ export class ShopService {
     private readonly productRepo: Repository<ProductEntity>,
   ) {}
 
-  async getProducts(page = 1, limit = 20, keyword = "") {
+  async getProducts(page = 1, limit = 20, keyword = "", categoryId?: number) {
     const [data, total] = await this.productRepo.findAndCount({
       where: {
         status: "on",
         ...(keyword ? { name: Like(`%${keyword}%`) } : {}),
+        ...(categoryId ? { categoryId } : {}),
       },
       order: { id: "DESC" },
       skip: (page - 1) * limit,
@@ -23,8 +24,12 @@ export class ShopService {
         "id",
         "name",
         "price",
+        "originalPrice",
         "profitRate",
         "stock",
+        "sales",
+        "tag",
+        "categoryId",
         "images",
         "category",
       ],

@@ -18,39 +18,87 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const wallet_entity_1 = require("../database/entities/wallet.entity");
 const withdrawal_entity_1 = require("../database/entities/withdrawal.entity");
+const bank_card_entity_1 = require("../database/entities/bank-card.entity");
+const wallet_transaction_entity_1 = require("../database/entities/wallet-transaction.entity");
 let WalletService = class WalletService {
-    constructor(walletRepo, withdrawalRepo, dataSource) {
+    constructor(walletRepo, withdrawalRepo, bankCardRepo, transactionRepo, dataSource) {
         this.walletRepo = walletRepo;
         this.withdrawalRepo = withdrawalRepo;
+        this.bankCardRepo = bankCardRepo;
+        this.transactionRepo = transactionRepo;
         this.dataSource = dataSource;
     }
     async getWallet(userId) {
         const wallet = await this.walletRepo.findOne({ where: { userId } });
         return wallet || { balance: 0, frozen: 0, totalEarn: 0 };
     }
-    async withdraw(userId, amount) {
+    async withdraw(userId, amount, method) {
         if (!amount || amount <= 0)
             throw new common_1.BadRequestException('提现金额无效');
+        if (amount < 10)
+            throw new common_1.BadRequestException('最低提现金额为 10 元');
+        const withdrawMethod = method === 'alipay' ? 'alipay' : 'bank';
+        let bankCard = null;
+        if (withdrawMethod === 'bank') {
+            bankCard = await this.bankCardRepo.findOne({
+                where: { userId, isDefault: 1, status: 1 },
+            });
+        }
         return this.dataSource.transaction(async (manager) => {
             const wallet = await manager.findOne(wallet_entity_1.WalletEntity, { where: { userId } });
             if (!wallet || Number(wallet.balance) < amount) {
                 throw new common_1.BadRequestException('余额不足');
             }
+            const newBalance = Number(wallet.balance) - amount;
             await manager.update(wallet_entity_1.WalletEntity, { userId }, {
                 balance: () => `balance - ${amount}`,
                 frozen: () => `frozen + ${amount}`,
             });
-            await manager.save(withdrawal_entity_1.WithdrawalEntity, manager.create(withdrawal_entity_1.WithdrawalEntity, { userId, amount }));
+            const withdrawal = await manager.save(withdrawal_entity_1.WithdrawalEntity, manager.create(withdrawal_entity_1.WithdrawalEntity, {
+                userId,
+                amount,
+                method: withdrawMethod,
+                bankCardId: bankCard?.id ?? null,
+                bankName: bankCard?.bankName ?? null,
+                bankAccount: bankCard?.cardNo ?? null,
+                realName: bankCard?.realName ?? null,
+            }));
+            await manager.save(wallet_transaction_entity_1.WalletTransactionEntity, manager.create(wallet_transaction_entity_1.WalletTransactionEntity, {
+                userId,
+                type: 'expense',
+                amount,
+                name: '申请提现',
+                refType: 'withdrawal',
+                refId: withdrawal.id,
+                balanceAfter: newBalance,
+            }));
             return { message: '提现申请已提交，预计 1-3 个工作日到账' };
         });
     }
-    async getTransactions(userId) {
-        const profits = await this.dataSource.query(`SELECT 'profit' AS type, amount, released_at AS date FROM profit_records
-       WHERE user_id = ? ORDER BY released_at DESC LIMIT 50`, [userId]);
-        const withdrawals = await this.dataSource.query(`SELECT 'withdraw' AS type, amount, applied_at AS date FROM withdrawals
-       WHERE user_id = ? ORDER BY applied_at DESC LIMIT 50`, [userId]);
-        const data = [...profits, ...withdrawals].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    async getBankCards(userId) {
+        const data = await this.bankCardRepo.find({
+            where: { userId, status: 1 },
+            select: ['id', 'bankName', 'lastFour', 'realName', 'isDefault'],
+            order: { isDefault: 'DESC', createdAt: 'ASC' },
+        });
         return { data };
+    }
+    async getDefaultBankCard(userId) {
+        const card = await this.bankCardRepo.findOne({
+            where: { userId, isDefault: 1, status: 1 },
+            select: ['bankName', 'lastFour'],
+        });
+        return card ?? null;
+    }
+    async getTransactions(userId, page = 1, limit = 20) {
+        const [data, total] = await this.transactionRepo.findAndCount({
+            where: { userId },
+            order: { createdAt: 'DESC' },
+            skip: (page - 1) * limit,
+            take: limit,
+            select: ['id', 'type', 'amount', 'name', 'createdAt'],
+        });
+        return { data, total };
     }
 };
 exports.WalletService = WalletService;
@@ -58,7 +106,11 @@ exports.WalletService = WalletService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(wallet_entity_1.WalletEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(withdrawal_entity_1.WithdrawalEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(bank_card_entity_1.BankCardEntity)),
+    __param(3, (0, typeorm_1.InjectRepository)(wallet_transaction_entity_1.WalletTransactionEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.DataSource])
 ], WalletService);

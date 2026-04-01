@@ -54,21 +54,44 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const user_entity_1 = require("../database/entities/user.entity");
 const wallet_entity_1 = require("../database/entities/wallet.entity");
+const sms_code_entity_1 = require("../database/entities/sms-code.entity");
 const token_blacklist_service_1 = require("../common/services/token-blacklist.service");
 const promotion_service_1 = require("../promotion/promotion.service");
 function genInviteCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 let AuthService = AuthService_1 = class AuthService {
-    constructor(userRepo, walletRepo, jwtService, tokenBlacklistService, promotionService) {
+    constructor(userRepo, walletRepo, smsCodeRepo, jwtService, tokenBlacklistService, promotionService) {
         this.userRepo = userRepo;
         this.walletRepo = walletRepo;
+        this.smsCodeRepo = smsCodeRepo;
         this.jwtService = jwtService;
         this.tokenBlacklistService = tokenBlacklistService;
         this.promotionService = promotionService;
         this.logger = new common_1.Logger(AuthService_1.name);
     }
+    async sendSmsCode(phone) {
+        await this.smsCodeRepo
+            .createQueryBuilder()
+            .update()
+            .set({ used: 1 })
+            .where('phone = :phone AND used = 0 AND expired_at > NOW()', { phone })
+            .execute();
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        const expiredAt = new Date(Date.now() + 5 * 60 * 1000);
+        await this.smsCodeRepo.save(this.smsCodeRepo.create({ phone, code, scene: 'register', used: 0, expiredAt }));
+        this.logger.log(`短信验证码 [${phone}]: ${code}`);
+        return { code };
+    }
     async register(dto) {
+        const smsCode = await this.smsCodeRepo.findOne({
+            where: { phone: dto.phone, scene: 'register', used: 0 },
+            order: { createdAt: 'DESC' },
+        });
+        if (!smsCode || smsCode.code !== dto.code || smsCode.expiredAt < new Date()) {
+            throw new common_1.BadRequestException('验证码无效或已过期');
+        }
+        await this.smsCodeRepo.update(smsCode.id, { used: 1 });
         const existing = await this.userRepo.findOne({ where: { phone: dto.phone } });
         if (existing)
             throw new common_1.BadRequestException('该手机号已注册');
@@ -94,7 +117,7 @@ let AuthService = AuthService_1 = class AuthService {
                 .grantReferralReward(parentId, saved.id)
                 .catch((err) => this.logger.error('邀请奖励发放异常', err));
         }
-        return { token, invite_code: inviteCode };
+        return { token, role: saved.role };
     }
     async login(dto) {
         const user = await this.userRepo.findOne({ where: { phone: dto.phone } });
@@ -118,7 +141,9 @@ exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(wallet_entity_1.WalletEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(sms_code_entity_1.SmsCodeEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         jwt_1.JwtService,
         token_blacklist_service_1.TokenBlacklistService,

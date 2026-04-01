@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/auth/SplashScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
+import AgreementScreen from '../screens/legal/AgreementScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +13,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Agreement" component={AgreementScreen} />
     </Stack.Navigator>
   );
 }

@@ -19,8 +19,8 @@ let ShopController = class ShopController {
     constructor(shopService) {
         this.shopService = shopService;
     }
-    getProducts(page = '1', limit = '20', keyword = '') {
-        return this.shopService.getProducts(+page, +limit, keyword);
+    getProducts(page = '1', limit = '20', keyword = '', categoryId) {
+        return this.shopService.getProducts(+page, +limit, keyword, categoryId ? +categoryId : undefined);
     }
     getProduct(id) {
         return this.shopService.getProduct(id);
@@ -32,8 +32,9 @@ __decorate([
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
     __param(2, (0, common_1.Query)('keyword')),
+    __param(3, (0, common_1.Query)('categoryId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object, String]),
     __metadata("design:returntype", void 0)
 ], ShopController.prototype, "getProducts", null);
 __decorate([

@@ -24,14 +24,24 @@ let ReviewController = class ReviewController {
     create(req, dto) {
         return this.reviewService.create(req.user.id, dto);
     }
-    getProductReviews(productId, page = '1', limit = '20') {
-        return this.reviewService.getProductReviews(productId, +page, +limit);
+    getStats(productId) {
+        return this.reviewService.getStats(productId ? Number(productId) : undefined);
+    }
+    getReviews(page = '1', limit = '20', productId, hasImage, minRating, hasFollowup) {
+        return this.reviewService.getReviews({
+            page: Number(page),
+            limit: Number(limit),
+            productId: productId ? Number(productId) : undefined,
+            hasImage: hasImage === 'true',
+            minRating: minRating ? Number(minRating) : undefined,
+            hasFollowup: hasFollowup === 'true',
+        });
     }
 };
 exports.ReviewController = ReviewController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Post)('reviews'),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -39,16 +49,26 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ReviewController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)('products/:productId/reviews'),
-    __param(0, (0, common_1.Param)('productId', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
+    (0, common_1.Get)('stats'),
+    __param(0, (0, common_1.Query)('productId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], ReviewController.prototype, "getProductReviews", null);
+], ReviewController.prototype, "getStats", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('productId')),
+    __param(3, (0, common_1.Query)('hasImage')),
+    __param(4, (0, common_1.Query)('minRating')),
+    __param(5, (0, common_1.Query)('hasFollowup')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, String, String, String, String]),
+    __metadata("design:returntype", void 0)
+], ReviewController.prototype, "getReviews", null);
 exports.ReviewController = ReviewController = __decorate([
-    (0, common_1.Controller)(),
+    (0, common_1.Controller)('reviews'),
     __metadata("design:paramtypes", [review_service_1.ReviewService])
 ], ReviewController);
 //# sourceMappingURL=review.controller.js.map

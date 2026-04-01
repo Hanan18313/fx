@@ -3,7 +3,6 @@ import {
   View,
   Text,
   FlatList,
-  Image,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -11,10 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import api from '../../services/api';
 import { useCartStore } from '../../store/cartStore';
 import { Colors, Spacing, Fonts } from '../../constants/theme';
-import { mockProducts } from '../../constants/mockData';
 import CartItemCard from '../../components/cart/CartItemCard';
 import CartBottomBar from '../../components/cart/CartBottomBar';
 
@@ -33,35 +32,12 @@ function PromoBanner() {
   );
 }
 
-interface RecCardProps {
-  product: { id: number; name: string; price: string; images: string[] };
-}
-function RecCard({ product }: RecCardProps) {
-  const addItem = useCartStore((s) => s.addItem);
-  return (
-    <View style={recStyles.card}>
-      <View style={recStyles.imgWrap}>
-        <Image source={{ uri: product.images[0] }} style={recStyles.img} resizeMode="cover" />
-      </View>
-      <Text style={recStyles.name} numberOfLines={2}>{product.name}</Text>
-      <View style={recStyles.footer}>
-        <Text style={recStyles.price}>¥{product.price}</Text>
-        <TouchableOpacity
-          style={recStyles.addBtn}
-          onPress={() => addItem(product as any)}
-        >
-          <Ionicons name="add" size={16} color={Colors.textWhite} />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-
 export default function CartScreen() {
   const navigation = useNavigation<any>();
   const [editing, setEditing] = React.useState(false);
 
   const items = useCartStore((s) => s.items);
+  const loadFromServer = useCartStore((s) => s.loadFromServer);
   const toggleSelect = useCartStore((s) => s.toggleSelect);
   const toggleSelectAll = useCartStore((s) => s.toggleSelectAll);
   const isAllSelected = useCartStore((s) => s.isAllSelected);
@@ -73,6 +49,29 @@ export default function CartScreen() {
   const clearSelected = useCartStore((s) => s.clearSelected);
   const selectedItems = useCartStore((s) => s.selectedItems);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      api.get('/cart').then((res) => {
+        const list = res.data?.data ?? res.data ?? [];
+        loadFromServer(list);
+      }).catch(() => { /* keep local state */ });
+    }, [loadFromServer]),
+  );
+
+  const handleUpdateQuantity = async (id: number, quantity: number) => {
+    updateQuantity(id, quantity);
+    if (quantity <= 0) {
+      await api.delete(`/cart/${id}`).catch(() => {});
+    } else {
+      await api.put(`/cart/${id}`, { quantity }).catch(() => {});
+    }
+  };
+
+  const handleRemoveItem = async (id: number) => {
+    removeItem(id);
+    await api.delete(`/cart/${id}`).catch(() => {});
+  };
+
   const handleSettle = () => {
     const count = selectedCount();
     if (count === 0) return;
@@ -83,13 +82,19 @@ export default function CartScreen() {
   const handleDeleteSelected = () => {
     const count = selectedCount();
     if (count === 0) return;
+    const selected = selectedItems();
     Alert.alert('确认删除', `删除所选 ${count} 件商品？`, [
       { text: '取消' },
-      { text: '删除', style: 'destructive', onPress: clearSelected },
+      {
+        text: '删除',
+        style: 'destructive',
+        onPress: async () => {
+          clearSelected();
+          await Promise.all(selected.map((item) => api.delete(`/cart/${item.id}`).catch(() => {})));
+        },
+      },
     ]);
   };
-
-  const recProducts = mockProducts.slice(0, 6);
 
   if (items.length === 0) {
     return (
@@ -133,25 +138,21 @@ export default function CartScreen() {
           key={item.id}
           item={item}
           onToggleSelect={() => toggleSelect(item.id)}
-          onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
-          onRemove={() => removeItem(item.id)}
+          onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
+          onRemove={() => handleRemoveItem(item.id)}
         />
       ))}
-
-      <Text style={styles.recTitle}>猜你喜欢</Text>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <FlatList
-        data={recProducts}
+        data={[]}
         keyExtractor={(item) => String(item.id)}
-        numColumns={2}
-        columnWrapperStyle={styles.recRow}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => <RecCard product={item} />}
+        renderItem={null}
       />
       <CartBottomBar
         isAllSelected={isAllSelected()}
@@ -209,10 +210,6 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     lineHeight: 28,
     marginTop: 24,
-    marginBottom: 16,
-  },
-  recRow: {
-    gap: 16,
     marginBottom: 16,
   },
   emptyWrap: {
@@ -300,62 +297,5 @@ const promoStyles = StyleSheet.create({
     position: 'absolute',
     right: -8,
     bottom: -8,
-  },
-});
-
-const recStyles = StyleSheet.create({
-  card: {
-    flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-      },
-      android: { elevation: 1 },
-    }),
-  },
-  imgWrap: {
-    aspectRatio: 1,
-    backgroundColor: '#F9F9F9',
-    borderRadius: 8,
-    margin: 12,
-    overflow: 'hidden',
-  },
-  img: {
-    width: '100%',
-    height: '100%',
-  },
-  name: {
-    fontSize: 11,
-    color: Colors.textPrimary,
-    lineHeight: 14,
-    marginHorizontal: 12,
-    height: 28,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: 12,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  price: {
-    fontSize: 14,
-    fontFamily: Fonts.numBlack,
-    color: Colors.textPrimary,
-    lineHeight: 20,
-  },
-  addBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: Colors.navyButton,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

@@ -21,11 +21,12 @@ let ShopService = class ShopService {
     constructor(productRepo) {
         this.productRepo = productRepo;
     }
-    async getProducts(page = 1, limit = 20, keyword = "") {
+    async getProducts(page = 1, limit = 20, keyword = "", categoryId) {
         const [data, total] = await this.productRepo.findAndCount({
             where: {
                 status: "on",
                 ...(keyword ? { name: (0, typeorm_2.Like)(`%${keyword}%`) } : {}),
+                ...(categoryId ? { categoryId } : {}),
             },
             order: { id: "DESC" },
             skip: (page - 1) * limit,
@@ -34,8 +35,12 @@ let ShopService = class ShopService {
                 "id",
                 "name",
                 "price",
+                "originalPrice",
                 "profitRate",
                 "stock",
+                "sales",
+                "tag",
+                "categoryId",
                 "images",
                 "category",
             ],

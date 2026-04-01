@@ -14,17 +14,29 @@ export class ProductEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
+  @Column({ name: 'original_price', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  originalPrice: number;
+
   @Column({ name: 'profit_rate', type: 'decimal', precision: 5, scale: 4, default: 0.25 })
   profitRate: number;
 
   @Column({ default: 0 })
   stock: number;
 
+  @Column({ default: 0 })
+  sales: number;
+
+  @Column({ type: 'enum', enum: ['promotion', 'new', 'hot', 'member_exclusive'], nullable: true })
+  tag: string;
+
   @Column({ type: 'json', nullable: true })
   images: string[];
 
   @Column({ length: 50, nullable: true })
   category: string;
+
+  @Column({ name: 'category_id', type: 'bigint', nullable: true })
+  categoryId: number;
 
   @Column({ type: 'enum', enum: ['on', 'off'], default: 'on' })
   status: string;

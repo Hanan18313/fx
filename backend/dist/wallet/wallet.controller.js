@@ -23,11 +23,17 @@ let WalletController = class WalletController {
     getWallet(req) {
         return this.walletService.getWallet(req.user.id);
     }
-    withdraw(req, amount) {
-        return this.walletService.withdraw(req.user.id, amount);
+    withdraw(req, amount, method) {
+        return this.walletService.withdraw(req.user.id, amount, method);
     }
-    getTransactions(req) {
-        return this.walletService.getTransactions(req.user.id);
+    getBankCards(req) {
+        return this.walletService.getBankCards(req.user.id);
+    }
+    getDefaultBankCard(req) {
+        return this.walletService.getDefaultBankCard(req.user.id);
+    }
+    getTransactions(req, page = 1, limit = 20) {
+        return this.walletService.getTransactions(req.user.id, Number(page), Number(limit));
     }
 };
 exports.WalletController = WalletController;
@@ -42,15 +48,32 @@ __decorate([
     (0, common_1.Post)('withdraw'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)('amount')),
+    __param(2, (0, common_1.Body)('method')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:paramtypes", [Object, Number, String]),
     __metadata("design:returntype", void 0)
 ], WalletController.prototype, "withdraw", null);
 __decorate([
-    (0, common_1.Get)('transactions'),
+    (0, common_1.Get)('bank-cards'),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], WalletController.prototype, "getBankCards", null);
+__decorate([
+    (0, common_1.Get)('bank-card'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], WalletController.prototype, "getDefaultBankCard", null);
+__decorate([
+    (0, common_1.Get)('transactions'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", void 0)
 ], WalletController.prototype, "getTransactions", null);
 exports.WalletController = WalletController = __decorate([

@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsArray, Min, Max } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsArray, IsBoolean, Min, Max } from 'class-validator';
 
 export class CreateReviewDto {
   @IsNumber()
@@ -22,6 +22,6 @@ export class CreateReviewDto {
   images?: string[];
 
   @IsOptional()
-  @IsNumber()
-  is_anonymous?: number;
+  @IsBoolean()
+  anonymous?: boolean;
 }

@@ -102,11 +102,9 @@ let OrderService = class OrderService {
             }
             await manager.save(itemsToSave);
             return {
-                order_id: savedOrder.id,
-                order_no: savedOrder.orderNo,
-                total_amount: savedOrder.totalAmount,
-                pay_amount: savedOrder.payAmount,
-                profit_pool: savedOrder.profitPool,
+                id: savedOrder.id,
+                payAmount: savedOrder.payAmount,
+                totalAmount: savedOrder.totalAmount,
             };
         });
     }
@@ -123,19 +121,36 @@ let OrderService = class OrderService {
                 await this.promotionService.grantCommission(user.parentId, userId, orderId, Number(order.profitPool), manager);
             }
         });
-        return { message: '支付成功，分润将从明日起每天自动释放' };
+        return { payAmount: order.payAmount, totalAmount: order.totalAmount };
     }
     async getOrders(userId, status, page = 1, limit = 20) {
         const where = { userId };
         if (status)
             where.status = status;
-        const [data, total] = await this.orderRepo.findAndCount({
+        const [orders, total] = await this.orderRepo.findAndCount({
             where,
             select: ['id', 'orderNo', 'totalAmount', 'payAmount', 'profitPool', 'status', 'paidAt', 'createdAt'],
             order: { id: 'DESC' },
             skip: (page - 1) * limit,
             take: limit,
         });
+        if (orders.length === 0)
+            return { data: [], total, page };
+        const orderIds = orders.map((o) => o.id);
+        const items = await this.orderItemRepo
+            .createQueryBuilder('item')
+            .where('item.order_id IN (:...ids)', { ids: orderIds })
+            .getMany();
+        const itemMap = new Map();
+        for (const item of items) {
+            const list = itemMap.get(item.orderId) || [];
+            list.push(item);
+            itemMap.set(item.orderId, list);
+        }
+        const data = orders.map((order) => ({
+            ...order,
+            items: itemMap.get(order.id) || [],
+        }));
         return { data, total, page };
     }
     async getOrderDetail(orderId, userId) {

@@ -23,6 +23,12 @@ export class UserEntity {
   @Column({ name: 'invite_code', length: 10, unique: true })
   inviteCode: string;
 
+  @Column({ name: 'member_no', length: 20, nullable: true })
+  memberNo: string;
+
+  @Column({ name: 'member_expire', type: 'date', nullable: true })
+  memberExpire: string;
+
   @Column({ name: 'parent_id', type: 'bigint', nullable: true })
   parentId: number;
 

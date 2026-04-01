@@ -10,8 +10,10 @@ export declare class UserController {
         nickname: string;
         avatar: string;
         role: string;
+        memberNo: string;
+        memberExpire: string;
         invite_code: string;
-        created_at: Date;
+        createdAt: Date;
     }>;
     updateProfile(req: any, dto: UpdateProfileDto): Promise<{
         message: string;

@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../database/entities/user.entity';
 import { WalletEntity } from '../database/entities/wallet.entity';
+import { SmsCodeEntity } from '../database/entities/sms-code.entity';
 import { TokenBlacklistService } from '../common/services/token-blacklist.service';
 import { PromotionService } from '../promotion/promotion.service';
 import { RegisterDto } from './dto/register.dto';
@@ -23,12 +24,44 @@ export class AuthService {
     private readonly userRepo: Repository<UserEntity>,
     @InjectRepository(WalletEntity)
     private readonly walletRepo: Repository<WalletEntity>,
+    @InjectRepository(SmsCodeEntity)
+    private readonly smsCodeRepo: Repository<SmsCodeEntity>,
     private readonly jwtService: JwtService,
     private readonly tokenBlacklistService: TokenBlacklistService,
     private readonly promotionService: PromotionService,
   ) {}
 
+  async sendSmsCode(phone: string) {
+    // 将该手机号已有未过期验证码标记为已使用
+    await this.smsCodeRepo
+      .createQueryBuilder()
+      .update()
+      .set({ used: 1 })
+      .where('phone = :phone AND used = 0 AND expired_at > NOW()', { phone })
+      .execute();
+
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const expiredAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    await this.smsCodeRepo.save(
+      this.smsCodeRepo.create({ phone, code, scene: 'register', used: 0, expiredAt }),
+    );
+
+    // 开发环境直接返回验证码，生产环境调用短信 SDK 后返回 {}
+    this.logger.log(`短信验证码 [${phone}]: ${code}`);
+    return { code };
+  }
+
   async register(dto: RegisterDto) {
+    const smsCode = await this.smsCodeRepo.findOne({
+      where: { phone: dto.phone, scene: 'register', used: 0 },
+      order: { createdAt: 'DESC' },
+    });
+    if (!smsCode || smsCode.code !== dto.code || smsCode.expiredAt < new Date()) {
+      throw new BadRequestException('验证码无效或已过期');
+    }
+    await this.smsCodeRepo.update(smsCode.id, { used: 1 });
+
     const existing = await this.userRepo.findOne({ where: { phone: dto.phone } });
     if (existing) throw new BadRequestException('该手机号已注册');
 
@@ -60,7 +93,7 @@ export class AuthService {
         .catch((err) => this.logger.error('邀请奖励发放异常', err));
     }
 
-    return { token, invite_code: inviteCode };
+    return { token, role: saved.role };
   }
 
   async login(dto: LoginDto) {

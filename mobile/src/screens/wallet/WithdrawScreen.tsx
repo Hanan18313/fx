@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,20 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../../services/api';
-import { Colors, Spacing, FontSize, BorderRadius, Shadow, Fonts } from '../../constants/theme';
+import { Colors, Spacing, BorderRadius, FontSize, Fonts } from '../../constants/theme';
 
-const QUICK_AMOUNTS = [50, 100, 500];
+type WithdrawMethod = 'bank' | 'alipay';
+
+interface BankCard {
+  bankName: string;
+  lastFour: string;
+}
 
 export default function WithdrawScreen() {
   const navigation = useNavigation<any>();
@@ -23,18 +30,26 @@ export default function WithdrawScreen() {
   const balance: number = route.params?.balance ?? 0;
 
   const [amount, setAmount] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState<WithdrawMethod>('bank');
+  const [bankCard, setBankCard] = useState<BankCard | null>(null);
+  const [loadingCard, setLoadingCard] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   const numAmount = parseFloat(amount) || 0;
   const canSubmit = numAmount >= 10 && numAmount <= balance && !submitting;
 
-  const handleQuickAmount = (val: number) => {
-    if (val <= balance) {
-      setAmount(String(val));
-    } else {
-      setAmount(String(balance));
+  const fetchBankCard = useCallback(async () => {
+    try {
+      const { data } = await api.get('/wallet/bank-card');
+      setBankCard(data);
+    } catch {
+      setBankCard(null);
+    } finally {
+      setLoadingCard(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { fetchBankCard(); }, [fetchBankCard]);
 
   const handleWithdrawAll = () => {
     setAmount(balance > 0 ? String(balance) : '');
@@ -51,8 +66,8 @@ export default function WithdrawScreen() {
     }
     setSubmitting(true);
     try {
-      await api.post('/wallet/withdraw', { amount: numAmount });
-      Alert.alert('提交成功', '提现申请已提交，预计1-3个工作日到账', [
+      await api.post('/wallet/withdraw', { amount: numAmount, method: selectedMethod });
+      Alert.alert('提交成功', '提现申请已提交，预计 2 小时内到账', [
         { text: '好的', onPress: () => navigation.goBack() },
       ]);
     } catch (err: any) {
@@ -71,83 +86,126 @@ export default function WithdrawScreen() {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Balance Header */}
-          <View style={styles.balanceCard}>
-            <Text style={styles.balanceLabel}>可用余额</Text>
-            <Text style={styles.balanceValue}>¥{Number(balance).toFixed(2)}</Text>
+          {/* Balance Display */}
+          <View style={styles.balanceSection}>
+            <Text style={styles.balanceLabel}>当前余额 (元)</Text>
+            <View style={styles.balanceRow}>
+              <Text style={styles.balanceCurrency}>¥</Text>
+              <Text style={styles.balanceValue}>
+                {Number(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
+            </View>
           </View>
 
           {/* Amount Input */}
-          <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>提现金额</Text>
-            <View style={styles.inputRow}>
-              <Text style={styles.currencySign}>¥</Text>
-              <TextInput
-                style={styles.amountInput}
-                value={amount}
-                onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ''))}
-                placeholder="0.00"
-                placeholderTextColor={Colors.textTertiary}
-                keyboardType="decimal-pad"
-                maxLength={10}
-              />
-            </View>
-            <View style={styles.inputDivider} />
-
-            {/* Quick Amounts */}
-            <View style={styles.quickRow}>
-              {QUICK_AMOUNTS.map((val) => (
+          <View style={styles.formSection}>
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>提现金额</Text>
+              <View style={styles.amountInputWrap}>
+                <Text style={styles.amountCurrency}>¥</Text>
+                <TextInput
+                  style={styles.amountInput}
+                  value={amount}
+                  onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ''))}
+                  placeholder="0.00"
+                  placeholderTextColor="rgba(195,198,211,0.7)"
+                  keyboardType="decimal-pad"
+                  maxLength={10}
+                />
                 <TouchableOpacity
-                  key={val}
-                  style={[
-                    styles.quickBtn,
-                    numAmount === val && styles.quickBtnActive,
-                  ]}
-                  onPress={() => handleQuickAmount(val)}
+                  style={styles.allBtn}
+                  onPress={handleWithdrawAll}
+                  activeOpacity={0.7}
                 >
-                  <Text
-                    style={[
-                      styles.quickBtnText,
-                      numAmount === val && styles.quickBtnTextActive,
-                    ]}
-                  >
-                    ¥{val}
-                  </Text>
+                  <Text style={styles.allBtnText}>全部</Text>
                 </TouchableOpacity>
-              ))}
-              <TouchableOpacity
-                style={[
-                  styles.quickBtn,
-                  numAmount === balance && balance > 0 && styles.quickBtnActive,
-                ]}
-                onPress={handleWithdrawAll}
-              >
-                <Text
-                  style={[
-                    styles.quickBtnText,
-                    numAmount === balance && balance > 0 && styles.quickBtnTextActive,
-                  ]}
-                >
-                  全部提现
-                </Text>
-              </TouchableOpacity>
+              </View>
             </View>
 
-            <Text style={styles.minNote}>最低提现金额 ¥10.00</Text>
+            {/* Payment Method */}
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>到账方式</Text>
+              <View style={styles.methodList}>
+                {/* Bank Card */}
+                <TouchableOpacity
+                  style={[styles.methodCard, selectedMethod === 'bank' && styles.methodCardSelected]}
+                  onPress={() => bankCard && setSelectedMethod('bank')}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.methodLeft}>
+                    <View style={[styles.methodIconWrap, { backgroundColor: 'rgba(216,226,255,0.5)' }]}>
+                      <Ionicons name="card-outline" size={18} color="#004191" />
+                    </View>
+                    <View style={styles.methodInfo}>
+                      {loadingCard ? (
+                        <ActivityIndicator size="small" color={Colors.navyButton} />
+                      ) : bankCard ? (
+                        <>
+                          <Text style={styles.methodName}>{bankCard.bankName}</Text>
+                          <Text style={styles.methodSub}>尾号 {bankCard.lastFour}</Text>
+                        </>
+                      ) : (
+                        <>
+                          <Text style={[styles.methodName, styles.methodNameMuted]}>银行卡</Text>
+                          <Text style={styles.methodSubMuted}>未绑定账户</Text>
+                        </>
+                      )}
+                    </View>
+                  </View>
+                  {selectedMethod === 'bank' && bankCard ? (
+                    <Ionicons name="checkmark-circle" size={20} color="#004191" />
+                  ) : (
+                    <Ionicons name="chevron-forward" size={14} color="rgba(67,71,81,0.4)" />
+                  )}
+                </TouchableOpacity>
+
+                {/* Alipay */}
+                <TouchableOpacity
+                  style={[styles.methodCard, styles.methodCardMuted, selectedMethod === 'alipay' && styles.methodCardSelected]}
+                  onPress={() => setSelectedMethod('alipay')}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.methodLeft}>
+                    <View style={[styles.methodIconWrap, { backgroundColor: 'rgba(232,232,232,0.6)' }]}>
+                      <Ionicons name="wallet-outline" size={18} color="rgba(67,71,81,0.6)" />
+                    </View>
+                    <View style={styles.methodInfo}>
+                      <Text style={[styles.methodName, styles.methodNameMuted]}>支付宝支付</Text>
+                      <Text style={styles.methodSubMuted}>未绑定账户</Text>
+                    </View>
+                  </View>
+                  <Ionicons name="chevron-forward" size={14} color="rgba(67,71,81,0.4)" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          {/* Footer note */}
+          <View style={styles.noteSection}>
+            <Text style={styles.noteText}>
+              提现手续费由平台承担。预计 2 小时内到账，{'\n'}具体到账时间取决于银行处理进度。
+            </Text>
           </View>
         </ScrollView>
 
-        {/* Submit */}
-        <TouchableOpacity
-          style={[styles.submitBtn, !canSubmit && styles.submitBtnDisabled]}
-          onPress={handleSubmit}
-          disabled={!canSubmit}
-        >
-          <Text style={styles.submitBtnText}>
-            {submitting ? '提交中...' : '确认提现'}
-          </Text>
-        </TouchableOpacity>
+        {/* Bottom Button */}
+        <View style={styles.bottomArea}>
+          <TouchableOpacity
+            style={[styles.submitBtn, !canSubmit && styles.submitBtnDisabled]}
+            onPress={handleSubmit}
+            disabled={!canSubmit}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.submitBtnText}>
+              {submitting ? '提交中...' : '确认提现'}
+            </Text>
+            {!submitting && (
+              <Ionicons name="arrow-forward" size={14} color="#fff" style={{ marginLeft: 8 }} />
+            )}
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -156,109 +214,200 @@ export default function WithdrawScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#F9F9F9',
   },
   scrollContent: {
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingHorizontal: Spacing.xxl,
+    paddingBottom: 32,
   },
-  balanceCard: {
-    backgroundColor: Colors.primary,
-    borderRadius: BorderRadius.lg,
-    marginHorizontal: Spacing.lg,
-    padding: Spacing.xxl,
+
+  // Balance
+  balanceSection: {
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    paddingTop: Spacing.xxxl,
+    paddingBottom: 56,
   },
   balanceLabel: {
-    fontSize: FontSize.md,
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: Spacing.sm,
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.medium,
+    color: 'rgba(67,71,81,0.6)',
+    letterSpacing: 0.3,
+    marginBottom: 12,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  balanceCurrency: {
+    fontSize: 20,
+    fontFamily: Fonts.numBold,
+    color: '#002C66',
+    opacity: 0.7,
+    letterSpacing: -0.9,
   },
   balanceValue: {
     fontSize: 36,
-    fontFamily: Fonts.numBold,
-    color: Colors.textWhite,
+    fontFamily: Fonts.numBlack,
+    color: '#002C66',
+    letterSpacing: -0.9,
+    lineHeight: 44,
   },
-  inputCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    ...Shadow.sm,
-    marginHorizontal: Spacing.lg,
-    padding: Spacing.xl,
+
+  // Form
+  formSection: {
+    gap: 48,
   },
-  inputLabel: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.lg,
+  fieldBlock: {
+    gap: 14,
   },
-  inputRow: {
+  fieldLabel: {
+    fontSize: 10,
+    fontFamily: Fonts.medium,
+    color: 'rgba(67,71,81,0.5)',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginLeft: 4,
+  },
+
+  // Amount input
+  amountInputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(226,226,226,0.6)',
+    borderRadius: 16,
+    height: 72,
+    paddingHorizontal: Spacing.xxl,
   },
-  currencySign: {
-    fontSize: 28,
+  amountCurrency: {
+    fontSize: 20,
     fontFamily: Fonts.numBold,
-    color: Colors.textPrimary,
+    color: '#1a1c1c',
     marginRight: Spacing.sm,
   },
   amountInput: {
     flex: 1,
-    fontSize: 36,
+    fontSize: 24,
     fontFamily: Fonts.numBold,
-    color: Colors.textPrimary,
+    color: '#1a1c1c',
     padding: 0,
   },
-  inputDivider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.divider,
-    marginVertical: Spacing.lg,
+  allBtn: {
+    backgroundColor: 'rgba(0,44,102,0.05)',
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  quickRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  quickBtn: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    borderRadius: BorderRadius.md,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  quickBtnActive: {
-    borderColor: Colors.primary,
-    backgroundColor: '#FFEBEE',
-  },
-  quickBtnText: {
-    fontSize: FontSize.sm,
-    color: Colors.textSecondary,
+  allBtnText: {
+    fontSize: FontSize.xs,
     fontFamily: Fonts.medium,
+    color: '#002C66',
   },
-  quickBtnTextActive: {
-    color: Colors.primary,
+
+  // Payment methods
+  methodList: {
+    gap: 12,
   },
-  minNote: {
-    fontSize: FontSize.sm,
-    color: Colors.textTertiary,
+  methodCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    padding: 17,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 },
+      android: { elevation: 1 },
+    }),
+  },
+  methodCardSelected: {
+    borderColor: 'rgba(0,65,145,0.2)',
+    backgroundColor: '#fff',
+  },
+  methodCardMuted: {
+    backgroundColor: 'rgba(243,243,243,0.5)',
+    borderColor: 'transparent',
+    ...Platform.select({ ios: { shadowOpacity: 0 }, android: { elevation: 0 } }),
+  },
+  methodLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  methodIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  methodInfo: {
+    gap: 2,
+  },
+  methodName: {
+    fontSize: FontSize.md,
+    fontFamily: Fonts.medium,
+    color: '#1a1c1c',
+    lineHeight: 20,
+  },
+  methodNameMuted: {
+    color: 'rgba(67,71,81,0.8)',
+  },
+  methodSub: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.numRegular,
+    color: 'rgba(67,71,81,0.6)',
+    lineHeight: 16,
+  },
+  methodSubMuted: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.medium,
+    color: 'rgba(115,119,131,0.6)',
+    lineHeight: 16,
+  },
+
+  // Note
+  noteSection: {
+    marginTop: 56,
+    paddingHorizontal: Spacing.xxxl,
+    alignItems: 'center',
+  },
+  noteText: {
+    fontSize: 10,
+    fontFamily: Fonts.medium,
+    color: 'rgba(67,71,81,0.4)',
     textAlign: 'center',
+    lineHeight: 16,
+  },
+
+  // Submit
+  bottomArea: {
+    paddingHorizontal: 40,
+    paddingBottom: Spacing.xxl,
+    paddingTop: Spacing.lg,
   },
   submitBtn: {
-    backgroundColor: Colors.primary,
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
-    paddingVertical: Spacing.lg,
+    backgroundColor: '#002C66',
     borderRadius: BorderRadius.full,
+    height: 56,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: { shadowColor: '#002C66', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 15 },
+      android: { elevation: 6 },
+    }),
   },
   submitBtnDisabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   submitBtnText: {
-    color: Colors.textWhite,
     fontSize: FontSize.lg,
-    fontFamily: Fonts.semibold,
+    fontFamily: Fonts.medium,
+    color: '#fff',
   },
 });

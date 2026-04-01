@@ -26,6 +26,11 @@ import { BannerEntity } from "./database/entities/banner.entity";
 import { FavoriteEntity } from "./database/entities/favorite.entity";
 import { ReviewEntity } from "./database/entities/review.entity";
 import { NotificationEntity } from "./database/entities/notification.entity";
+import { SmsCodeEntity } from "./database/entities/sms-code.entity";
+import { BankCardEntity } from "./database/entities/bank-card.entity";
+import { WalletTransactionEntity } from "./database/entities/wallet-transaction.entity";
+import { FlashSaleEntity } from "./database/entities/flash-sale.entity";
+import { CartItemEntity } from "./database/entities/cart-item.entity";
 import { AuthModule } from "./auth/auth.module";
 import { ShopModule } from "./shop/shop.module";
 import { OrderModule } from "./order/order.module";
@@ -41,6 +46,8 @@ import { FavoriteModule } from "./favorite/favorite.module";
 import { ReviewModule } from "./review/review.module";
 import { NotificationModule } from "./notification/notification.module";
 import { RedisModule } from "./common/redis/redis.module";
+import { FlashSaleModule } from "./flash-sale/flash-sale.module";
+import { CartModule } from "./cart/cart.module";
 
 @Module({
   imports: [
@@ -81,6 +88,11 @@ import { RedisModule } from "./common/redis/redis.module";
           FavoriteEntity,
           ReviewEntity,
           NotificationEntity,
+          SmsCodeEntity,
+          BankCardEntity,
+          WalletTransactionEntity,
+          FlashSaleEntity,
+          CartItemEntity,
         ],
         synchronize: false, // 不自动改表，使用 init.sql 管理表结构
         timezone: "+08:00",
@@ -113,6 +125,8 @@ import { RedisModule } from "./common/redis/redis.module";
     FavoriteModule,
     ReviewModule,
     NotificationModule,
+    FlashSaleModule,
+    CartModule,
     AdminModule,
   ],
 })

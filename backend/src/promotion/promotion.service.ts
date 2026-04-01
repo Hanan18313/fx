@@ -109,23 +109,50 @@ export class PromotionService {
       [userId],
     );
 
+    const [monthlyRow] = await this.dataSource.query(
+      `SELECT COALESCE(SUM(amount), 0) AS monthly_estimate
+       FROM promotion_rewards
+       WHERE user_id = ? AND DATE_FORMAT(created_at, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')`,
+      [userId],
+    );
+
+    const [yesterdayRow] = await this.dataSource.query(
+      `SELECT COALESCE(SUM(amount), 0) AS yesterday_earning
+       FROM profit_records
+       WHERE user_id = ? AND released_at = DATE_SUB(CURDATE(), INTERVAL 1 DAY)`,
+      [userId],
+    );
+
     return {
       invite_count: inviteCount,
       referral_total: Number(result.referral_total),
       commission_total: Number(result.commission_total),
       total_reward: Number(result.total_reward),
+      monthly_estimate: Number(monthlyRow.monthly_estimate),
+      yesterday_earning: Number(yesterdayRow.yesterday_earning),
     };
   }
 
   async getInvitees(userId: number, page = 1, limit = 20) {
-    const [data, total] = await this.userRepo.findAndCount({
-      where: { parentId: userId },
-      select: ['nickname', 'avatar', 'createdAt'],
-      order: { createdAt: 'DESC' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return { data, total, page };
+    const offset = (page - 1) * limit;
+    const data = await this.dataSource.query(
+      `SELECT u.nickname, u.avatar, u.created_at AS createdAt,
+              COALESCE(
+                (SELECT SUM(amount) FROM profit_records WHERE user_id = u.id AND released_at = CURDATE()),
+                0
+              ) AS todayEarning,
+              1 AS level
+       FROM users u
+       WHERE u.parent_id = ?
+       ORDER BY u.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [userId, limit, offset],
+    );
+    const [{ cnt }] = await this.dataSource.query(
+      `SELECT COUNT(*) AS cnt FROM users WHERE parent_id = ?`,
+      [userId],
+    );
+    return { data: data.map(row => ({ ...row, todayEarning: Number(row.todayEarning), level: 1 })), total: Number(cnt), page };
   }
 
   async getRewards(userId: number, page = 1, limit = 20) {

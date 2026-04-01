@@ -7,10 +7,12 @@ export declare class FavoriteService {
     constructor(favoriteRepo: Repository<FavoriteEntity>, productRepo: Repository<ProductEntity>);
     list(userId: number): Promise<{
         data: {
-            id: number;
-            product_id: number;
-            created_at: Date;
-            product: ProductEntity;
+            productId: number;
+            name: string;
+            price: number;
+            originalPrice: number;
+            images: string[];
+            tag: string;
         }[];
     }>;
     add(userId: number, productId: number): Promise<{

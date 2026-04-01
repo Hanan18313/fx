@@ -8,12 +8,13 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UserEntity } from '../database/entities/user.entity';
 import { WalletEntity } from '../database/entities/wallet.entity';
+import { SmsCodeEntity } from '../database/entities/sms-code.entity';
 import { TokenBlacklistService } from '../common/services/token-blacklist.service';
 import { PromotionModule } from '../promotion/promotion.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, WalletEntity]),
+    TypeOrmModule.forFeature([UserEntity, WalletEntity, SmsCodeEntity]),
     PassportModule,
     PromotionModule,
     JwtModule.registerAsync({

@@ -3,6 +3,24 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Fonts } from '../../constants/theme';
 import type { QuickCategoryGridProps } from './types';
+import type { ComponentProps } from 'react';
+
+type IoniconsName = ComponentProps<typeof Ionicons>['name'];
+
+// 将后端可能返回的非 Ionicons 图标名映射到合法图标
+const ICON_FALLBACK_MAP: Record<string, IoniconsName> = {
+  'food-steak': 'restaurant-outline',
+  'cookie': 'cafe-outline',
+  'cup-water': 'water-outline',
+  'grain': 'nutrition-outline',
+  'face-woman-shimmer': 'sparkles-outline',
+  'spray-bottle': 'flask-outline',
+  'baby-bottle-outline': 'heart-outline',
+};
+
+function resolveIcon(name: string): IoniconsName {
+  return (ICON_FALLBACK_MAP[name] ?? name ?? 'grid-outline') as IoniconsName;
+}
 
 export default function QuickCategoryGrid({ categories, onPress }: QuickCategoryGridProps) {
   return (
@@ -16,7 +34,7 @@ export default function QuickCategoryGrid({ categories, onPress }: QuickCategory
         >
           <View style={styles.iconBox}>
             <Ionicons
-              name={cat.icon as any}
+              name={resolveIcon(cat.icon)}
               size={20}
               color={Colors.navy}
             />

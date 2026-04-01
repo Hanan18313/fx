@@ -16,7 +16,7 @@ export class UserService {
   async getProfile(userId: number) {
     const user = await this.userRepo.findOne({
       where: { id: userId },
-      select: ['id', 'phone', 'nickname', 'avatar', 'role', 'inviteCode', 'createdAt'],
+      select: ['id', 'phone', 'nickname', 'avatar', 'role', 'inviteCode', 'memberNo', 'memberExpire', 'createdAt'],
     });
     if (!user) throw new NotFoundException('用户不存在');
 
@@ -27,8 +27,10 @@ export class UserService {
       nickname: user.nickname,
       avatar: user.avatar,
       role: user.role,
+      memberNo: user.memberNo,
+      memberExpire: user.memberExpire,
       invite_code: user.inviteCode,
-      created_at: user.createdAt,
+      createdAt: user.createdAt,
     };
   }
 

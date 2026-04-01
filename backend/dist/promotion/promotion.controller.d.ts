@@ -10,9 +10,11 @@ export declare class PromotionController {
         referral_total: number;
         commission_total: number;
         total_reward: number;
+        monthly_estimate: number;
+        yesterday_earning: number;
     }>;
     getInvitees(req: any, page?: string, limit?: string): Promise<{
-        data: UserEntity[];
+        data: any;
         total: number;
         page: number;
     }>;

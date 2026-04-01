@@ -4,5 +4,5 @@ export declare class CreateReviewDto {
     rating?: number;
     content?: string;
     images?: string[];
-    is_anonymous?: number;
+    anonymous?: boolean;
 }

@@ -1,0 +1,111 @@
+<h2>点击职位后的详情分析视图</h2>
+<p class="subtitle">弹窗内从"列表视图"切换到"分析视图"，这是分析视图的内容布局</p>
+
+<div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+
+  <!-- 弹窗详情视图 -->
+  <div style="width:280px;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.18);overflow:hidden;font-size:11px">
+
+    <!-- Header -->
+    <div style="background:#6200ea;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="cursor:pointer;opacity:.8">←</span>
+        <span style="font-weight:600">职位分析</span>
+      </div>
+      <span style="opacity:.7;cursor:pointer">✕</span>
+    </div>
+
+    <!-- 职位基本信息 -->
+    <div style="padding:12px 14px;border-bottom:1px solid #f0f0f0;background:#fafafa">
+      <div style="font-weight:700;font-size:13px;color:#1a1a1a;margin-bottom:4px">光伏电站运维工程师</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="color:#e53935;font-weight:600">15-20K</span>
+        <span style="color:#888">·</span>
+        <span style="color:#555">华能集团</span>
+        <span style="color:#888">·</span>
+        <span style="color:#555">北京</span>
+      </div>
+      <div style="margin-top:6px">
+        <a style="color:#6200ea;font-size:10px;text-decoration:none">查看原始岗位 →</a>
+      </div>
+    </div>
+
+    <!-- 分析内容（滚动区） -->
+    <div style="max-height:320px;overflow-y:auto;padding:12px 14px">
+
+      <!-- 薪资分析 -->
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:14px">💰</span>
+          <span style="font-weight:600;color:#333">薪资分析</span>
+          <span style="background:#e8f5e9;color:#388e3c;border-radius:10px;padding:1px 8px;font-size:9px;margin-left:auto">合理</span>
+        </div>
+        <div style="background:#f9f9f9;border-radius:8px;padding:8px 10px;color:#555;line-height:1.6">
+          北京光伏运维工程师市场薪资区间为 <strong>13-22K</strong>，该岗位报价处于<strong>中上水平</strong>，具有一定竞争力。
+        </div>
+      </div>
+
+      <!-- 公司背景 -->
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:14px">🏢</span>
+          <span style="font-weight:600;color:#333">公司背景</span>
+          <span style="background:#e3f2fd;color:#1565c0;border-radius:10px;padding:1px 8px;font-size:9px;margin-left:auto">央企</span>
+        </div>
+        <div style="background:#f9f9f9;border-radius:8px;padding:8px 10px;color:#555;line-height:1.6">
+          华能集团是中国五大发电集团之一，<strong>央企背景</strong>，稳定性高。在新能源领域持续扩张，光伏装机量位列行业前三。
+        </div>
+      </div>
+
+      <!-- 简历匹配 -->
+      <div style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:14px">📋</span>
+          <span style="font-weight:600;color:#333">简历匹配</span>
+          <span style="background:#fff3e0;color:#e65100;border-radius:10px;padding:1px 8px;font-size:9px;margin-left:auto">匹配度 78%</span>
+        </div>
+        <!-- 进度条 -->
+        <div style="background:#eee;border-radius:4px;height:6px;margin-bottom:8px">
+          <div style="background:#ff9800;width:78%;height:100%;border-radius:4px"></div>
+        </div>
+        <div style="background:#f9f9f9;border-radius:8px;padding:8px 10px;color:#555;line-height:1.6">
+          ✅ 你有光伏项目经验，符合核心要求<br>
+          ✅ 持有电工证，加分项<br>
+          ⚠️ 岗位要求 5 年经验，你的简历显示 3 年，建议在面试中着重说明项目规模
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部操作 -->
+    <div style="padding:10px 14px;border-top:1px solid #f0f0f0;display:flex;gap:8px">
+      <div style="flex:1;background:#f3e5f5;color:#6200ea;border-radius:8px;padding:6px;text-align:center;cursor:pointer;font-weight:600">
+        继续对话
+      </div>
+      <div style="flex:1;background:#6200ea;color:#fff;border-radius:8px;padding:6px;text-align:center;cursor:pointer;font-weight:600">
+        投递简历
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 说明文字 -->
+  <div style="max-width:240px;padding-top:16px">
+    <div class="section">
+      <div class="label">交互逻辑</div>
+      <p style="font-size:12px;color:#555;line-height:1.7">
+        用户点击职位卡片 → 弹窗内切换到此视图<br><br>
+        左上角 ← 可返回职位列表<br><br>
+        "继续对话" → 回到聊天，可追问<br><br>
+        "投递简历" → 跳转到网站原始投递页
+      </p>
+    </div>
+    <div class="section">
+      <div class="label">分析由 DeepSeek 生成</div>
+      <p style="font-size:12px;color:#555;line-height:1.7">
+        薪资 / 公司背景 / 简历匹配三块内容由一次 API 调用并行返回，展示时用流式输出逐块显示
+      </p>
+    </div>
+  </div>
+
+</div>

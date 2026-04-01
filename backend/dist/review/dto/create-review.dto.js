@@ -41,7 +41,7 @@ __decorate([
 ], CreateReviewDto.prototype, "images", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], CreateReviewDto.prototype, "is_anonymous", void 0);
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateReviewDto.prototype, "anonymous", void 0);
 //# sourceMappingURL=create-review.dto.js.map

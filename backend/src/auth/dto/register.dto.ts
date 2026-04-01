@@ -6,6 +6,10 @@ export class RegisterDto {
   phone: string;
 
   @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsString()
   @MinLength(6)
   password: string;
 

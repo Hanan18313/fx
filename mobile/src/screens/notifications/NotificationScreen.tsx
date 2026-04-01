@@ -104,19 +104,26 @@ export default function NotificationScreen() {
     }
   };
 
-  const handleMarkAsRead = async (item: Notification) => {
-    if (item.isRead === 0) {
-      try {
-        await api.put(`/notifications/${item.id}/read`);
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === item.id ? { ...n, isRead: 1 } : n)),
-        );
-      } catch {
-        /* ignore */
-      }
-    }
+  const handleItemPress = async (item: Notification) => {
     if (item.linkType === 'order' && item.linkValue) {
+      if (item.isRead === 0) {
+        try {
+          await api.put(`/notifications/${item.id}/read`);
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === item.id ? { ...n, isRead: 1 } : n)),
+          );
+        } catch { /* ignore */ }
+      }
       navigation.navigate('OrderDetail', { orderId: item.linkValue });
+    } else {
+      const updated = { ...item, isRead: 1 };
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === item.id ? updated : n)),
+      );
+      navigation.navigate('NotificationDetail', { item: updated });
+      if (item.isRead === 0) {
+        api.put(`/notifications/${item.id}/read`).catch(() => null);
+      }
     }
   };
 
@@ -140,7 +147,7 @@ export default function NotificationScreen() {
   const renderItem = ({ item }: { item: Notification }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => handleMarkAsRead(item)}
+      onPress={() => handleItemPress(item)}
       activeOpacity={0.8}
     >
       <View style={styles.cardLeft}>

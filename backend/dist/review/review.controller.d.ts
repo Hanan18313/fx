@@ -3,8 +3,15 @@ import { CreateReviewDto } from './dto/create-review.dto';
 export declare class ReviewController {
     private readonly reviewService;
     constructor(reviewService: ReviewService);
-    create(req: any, dto: CreateReviewDto): Promise<import("../database/entities/review.entity").ReviewEntity>;
-    getProductReviews(productId: number, page?: string, limit?: string): Promise<{
+    create(req: any, dto: CreateReviewDto): Promise<{}>;
+    getStats(productId?: string): Promise<{
+        avgRating: number;
+        total: number;
+        withImage: number;
+        positive: number;
+        withFollowup: number;
+    }>;
+    getReviews(page?: string, limit?: string, productId?: string, hasImage?: string, minRating?: string, hasFollowup?: string): Promise<{
         data: {
             id: number;
             rating: number;
@@ -12,9 +19,11 @@ export declare class ReviewController {
             images: string[];
             nickname: string;
             avatar: any;
-            created_at: Date;
+            hasFollowup: number;
+            followupContent: string;
+            followupAt: Date;
+            createdAt: Date;
         }[];
         total: number;
-        page: number;
     }>;
 }

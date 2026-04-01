@@ -11,6 +11,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const wallet_entity_1 = require("../database/entities/wallet.entity");
 const withdrawal_entity_1 = require("../database/entities/withdrawal.entity");
+const bank_card_entity_1 = require("../database/entities/bank-card.entity");
+const wallet_transaction_entity_1 = require("../database/entities/wallet-transaction.entity");
 const wallet_controller_1 = require("./wallet.controller");
 const wallet_service_1 = require("./wallet.service");
 let WalletModule = class WalletModule {
@@ -18,7 +20,7 @@ let WalletModule = class WalletModule {
 exports.WalletModule = WalletModule;
 exports.WalletModule = WalletModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([wallet_entity_1.WalletEntity, withdrawal_entity_1.WithdrawalEntity])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([wallet_entity_1.WalletEntity, withdrawal_entity_1.WithdrawalEntity, bank_card_entity_1.BankCardEntity, wallet_transaction_entity_1.WalletTransactionEntity])],
         controllers: [wallet_controller_1.WalletController],
         providers: [wallet_service_1.WalletService],
     })

@@ -11,6 +11,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import Svg, { Circle, Rect, Path, G, Defs, ClipPath } from 'react-native-svg';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +26,6 @@ import {
 } from '../../constants/theme';
 import type { Order, OrderStatus } from '../../types/order';
 import { ORDER_STATUS_MAP } from '../../types/order';
-import EmptyState from '../../components/common/EmptyState';
 
 const PAGE_SIZE = 10;
 
@@ -311,7 +311,6 @@ export default function OrderListScreen() {
           <>
             {/* ── Editorial Header ── */}
             <View style={styles.editorialHeader}>
-              <Text style={styles.editorialSub}>Order History</Text>
               <Text style={styles.editorialTitle}>我的订单</Text>
             </View>
 
@@ -348,7 +347,7 @@ export default function OrderListScreen() {
               <ActivityIndicator size="large" color={Colors.navyButton} />
             </View>
           ) : (
-            <EmptyState icon="📋" message="暂无相关订单" />
+            <OrderEmptyState />
           )
         }
         refreshControl={
@@ -424,10 +423,10 @@ const styles = StyleSheet.create({
   },
   tabActive: {
     backgroundColor: Colors.navyButton,
-    shadowColor: Colors.navyButton,
-    shadowOffset: { width: 0, height: 4 },
+    // shadowColor: Colors.navyButton,
+    // shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 6,
+    // shadowRadius: 6,
     elevation: 4,
   },
   tabText: {
@@ -623,5 +622,72 @@ const styles = StyleSheet.create({
     color: Colors.textTertiary,
     fontSize: FontSize.sm,
     paddingVertical: Spacing.xl,
+  },
+});
+
+function OrderEmptyState() {
+  return (
+    <View style={emptyStyles.wrap}>
+      <Svg width={180} height={160} viewBox="0 0 180 160">
+        <Defs>
+          <ClipPath id="cardClip">
+            <Rect x="30" y="20" width="120" height="110" rx="12" />
+          </ClipPath>
+        </Defs>
+        {/* 背景光晕 */}
+        <Circle cx="90" cy="80" r="72" fill="rgba(0,65,145,0.05)" />
+        <Circle cx="90" cy="80" r="52" fill="rgba(0,65,145,0.06)" />
+        {/* 主卡片 */}
+        <Rect x="30" y="20" width="120" height="110" rx="12" fill="#FFFFFF" />
+        {/* 卡片顶部色条 */}
+        <Rect x="30" y="20" width="120" height="6" rx="3" fill="#004191" />
+        {/* 文档线条 */}
+        <Rect x="46" y="44" width="54" height="6" rx="3" fill="#E2E2E2" />
+        <Rect x="46" y="56" width="40" height="5" rx="2.5" fill="#EEEEEE" />
+        <Rect x="46" y="68" width="48" height="5" rx="2.5" fill="#EEEEEE" />
+        <Rect x="46" y="80" width="35" height="5" rx="2.5" fill="#EEEEEE" />
+        {/* 右侧小图标区 */}
+        <Rect x="110" y="44" width="28" height="28" rx="8" fill="#F3F3F3" />
+        <Path d="M121 52 L128 52 M121 57 L126 57" stroke="#C0C0C0" strokeWidth="2" strokeLinecap="round" />
+        {/* 底部虚线 */}
+        <Rect x="46" y="98" width="88" height="1" rx="0.5" fill="#EEEEEE" />
+        {/* 放大镜圆圈背景 */}
+        <Circle cx="138" cy="110" r="16" fill="#EEF2FF" />
+        {/* 放大镜 */}
+        <Circle cx="135" cy="107" r="7" fill="none" stroke="#004191" strokeWidth="2.5" />
+        <Path d="M140 112 L145 117" stroke="#004191" strokeWidth="2.5" strokeLinecap="round" />
+        {/* 放大镜内问号 */}
+        <Path
+          d="M133.5 104.5 C133.5 103.1 134.6 102 136 102 C137.4 102 138.5 103.1 138.5 104.5 C138.5 105.5 137.9 106.3 137 106.8 L137 108"
+          stroke="#004191" strokeWidth="1.8" strokeLinecap="round" fill="none"
+        />
+        <Circle cx="137" cy="109.8" r="0.9" fill="#004191" />
+      </Svg>
+
+      <Text style={emptyStyles.title}>暂无相关订单</Text>
+      <Text style={emptyStyles.subtitle}>您还没有该状态的订单记录</Text>
+    </View>
+  );
+}
+
+const emptyStyles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 60,
+    paddingBottom: 40,
+    gap: Spacing.sm,
+  },
+  title: {
+    marginTop: Spacing.xl,
+    fontSize: FontSize.lg,
+    fontFamily: Fonts.bold,
+    color: Colors.textSecondary,
+  },
+  subtitle: {
+    fontSize: FontSize.sm,
+    fontFamily: Fonts.medium,
+    color: Colors.textTertiary,
   },
 });

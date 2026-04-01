@@ -35,6 +35,11 @@ const banner_entity_1 = require("./database/entities/banner.entity");
 const favorite_entity_1 = require("./database/entities/favorite.entity");
 const review_entity_1 = require("./database/entities/review.entity");
 const notification_entity_1 = require("./database/entities/notification.entity");
+const sms_code_entity_1 = require("./database/entities/sms-code.entity");
+const bank_card_entity_1 = require("./database/entities/bank-card.entity");
+const wallet_transaction_entity_1 = require("./database/entities/wallet-transaction.entity");
+const flash_sale_entity_1 = require("./database/entities/flash-sale.entity");
+const cart_item_entity_1 = require("./database/entities/cart-item.entity");
 const auth_module_1 = require("./auth/auth.module");
 const shop_module_1 = require("./shop/shop.module");
 const order_module_1 = require("./order/order.module");
@@ -50,6 +55,8 @@ const favorite_module_1 = require("./favorite/favorite.module");
 const review_module_1 = require("./review/review.module");
 const notification_module_1 = require("./notification/notification.module");
 const redis_module_1 = require("./common/redis/redis.module");
+const flash_sale_module_1 = require("./flash-sale/flash-sale.module");
+const cart_module_1 = require("./cart/cart.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -92,6 +99,11 @@ exports.AppModule = AppModule = __decorate([
                         favorite_entity_1.FavoriteEntity,
                         review_entity_1.ReviewEntity,
                         notification_entity_1.NotificationEntity,
+                        sms_code_entity_1.SmsCodeEntity,
+                        bank_card_entity_1.BankCardEntity,
+                        wallet_transaction_entity_1.WalletTransactionEntity,
+                        flash_sale_entity_1.FlashSaleEntity,
+                        cart_item_entity_1.CartItemEntity,
                     ],
                     synchronize: false,
                     timezone: "+08:00",
@@ -121,6 +133,8 @@ exports.AppModule = AppModule = __decorate([
             favorite_module_1.FavoriteModule,
             review_module_1.ReviewModule,
             notification_module_1.NotificationModule,
+            flash_sale_module_1.FlashSaleModule,
+            cart_module_1.CartModule,
             admin_module_1.AdminModule,
         ],
     })

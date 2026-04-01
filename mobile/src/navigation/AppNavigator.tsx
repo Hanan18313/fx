@@ -22,6 +22,11 @@ import FavoritesScreen from '../screens/favorites/FavoritesScreen';
 import NotificationScreen from '../screens/notifications/NotificationScreen';
 import SettingsScreen from '../screens/settings/SettingsScreen';
 import SearchScreen from '../screens/shop/SearchScreen';
+import AgreementScreen from '../screens/legal/AgreementScreen';
+import NotificationDetailScreen from '../screens/notifications/NotificationDetailScreen';
+import ReviewListScreen from '../screens/reviews/ReviewListScreen';
+import WriteReviewScreen from '../screens/reviews/WriteReviewScreen';
+import InviteScreen from '../screens/promotion/InviteScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +66,11 @@ export default function AppNavigator() {
             <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: '我的收藏' }} />
             <Stack.Screen name="Notifications" component={NotificationScreen} options={{ title: '消息通知' }} />
             <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: '设置' }} />
+            <Stack.Screen name="Agreement" component={AgreementScreen} options={{ title: '法律中心' }} />
+            <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} options={{ title: '通知详情' }} />
+            <Stack.Screen name="ReviewList" component={ReviewListScreen} options={{ title: '历史评价' }} />
+            <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ title: '发表评价' }} />
+            <Stack.Screen name="Invite" component={InviteScreen} options={{ title: '邀请好友' }} />
           </Stack.Group>
           <Stack.Screen name="Search" component={SearchScreen} />
         </>
